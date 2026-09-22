@@ -25,11 +25,20 @@ export function ContactForm({
   contactId,
   initialValues,
   applications,
+  compact,
+  onCreated,
 }: {
   mode: "create" | "edit";
   contactId?: string;
   initialValues?: ContactFormValues;
   applications: { id: string; company: string; roleTitle: string }[];
+  /** Hides the "Linked applications" section — used when this form is
+   * embedded inline (e.g. quick-adding a referral from the application
+   * form), where there's nothing meaningful to link yet. */
+  compact?: boolean;
+  /** Used by the inline "+ New" flow on the application form — skips the
+   * redirect and hands the new contact straight back instead. */
+  onCreated?: (contact: { id: string; name: string }) => void;
 }) {
   const [values, setValues] = useState<ContactFormValues>(
     initialValues ?? EMPTY_CONTACT_FORM_VALUES,
@@ -75,7 +84,11 @@ export function ContactForm({
       }
 
       if (mode === "create") {
-        router.push(`/contacts/${result.data.id}`);
+        if (onCreated) {
+          onCreated({ id: result.data.id, name: values.name.trim() });
+        } else {
+          router.push(`/contacts/${result.data.id}`);
+        }
       } else {
         setSaved(true);
         router.refresh();
@@ -215,34 +228,38 @@ export function ContactForm({
         </Field>
       </fieldset>
 
-      <fieldset className="flex flex-col gap-2">
-        <legend className="text-foreground mb-1 text-sm font-semibold">
-          Linked applications
-        </legend>
-        {applications.length === 0 ? (
-          <p className="text-muted-foreground text-sm">
-            No applications to link yet.
-          </p>
-        ) : (
-          <div className="border-border flex max-h-48 flex-col gap-1 overflow-y-auto rounded-md border p-2">
-            {applications.map((app) => (
-              <label
-                key={app.id}
-                className="hover:bg-muted flex items-center gap-2 rounded px-1.5 py-1 text-sm"
-              >
-                <input
-                  type="checkbox"
-                  className="border-input h-4 w-4 rounded"
-                  checked={values.applicationIds.includes(app.id)}
-                  onChange={() => toggleApplication(app.id)}
-                />
-                <span className="text-foreground">{app.company}</span>
-                <span className="text-muted-foreground">— {app.roleTitle}</span>
-              </label>
-            ))}
-          </div>
-        )}
-      </fieldset>
+      {!compact && (
+        <fieldset className="flex flex-col gap-2">
+          <legend className="text-foreground mb-1 text-sm font-semibold">
+            Linked applications
+          </legend>
+          {applications.length === 0 ? (
+            <p className="text-muted-foreground text-sm">
+              No applications to link yet.
+            </p>
+          ) : (
+            <div className="border-border flex max-h-48 flex-col gap-1 overflow-y-auto rounded-md border p-2">
+              {applications.map((app) => (
+                <label
+                  key={app.id}
+                  className="hover:bg-muted flex items-center gap-2 rounded px-1.5 py-1 text-sm"
+                >
+                  <input
+                    type="checkbox"
+                    className="border-input h-4 w-4 rounded"
+                    checked={values.applicationIds.includes(app.id)}
+                    onChange={() => toggleApplication(app.id)}
+                  />
+                  <span className="text-foreground">{app.company}</span>
+                  <span className="text-muted-foreground">
+                    — {app.roleTitle}
+                  </span>
+                </label>
+              ))}
+            </div>
+          )}
+        </fieldset>
+      )}
 
       <div className="flex items-center gap-3">
         <Button type="submit" disabled={isPending}>

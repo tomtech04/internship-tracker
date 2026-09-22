@@ -11,6 +11,7 @@ import { Button } from "@/components/common/button";
 import { Field, fieldClass } from "@/components/common/form-fields";
 import { PasteFromClaudeSection } from "@/components/common/paste-from-claude";
 import { QuickAddCompanyModal } from "@/components/companies/quick-add-company-modal";
+import { QuickAddContactModal } from "@/components/contacts/quick-add-contact-modal";
 import { RESUME_VERSIONS, SOURCES, STATUSES, TIERS } from "@/lib/constants";
 import type { ParsedAutofillFields } from "@/lib/autofill";
 
@@ -51,6 +52,8 @@ export function ApplicationForm({
   );
   const [companyOptions, setCompanyOptions] = useState(companies);
   const [showNewCompany, setShowNewCompany] = useState(false);
+  const [contactOptions, setContactOptions] = useState(contacts);
+  const [showNewContact, setShowNewContact] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({});
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
@@ -352,20 +355,32 @@ export function ApplicationForm({
             Referral &amp; compensation
           </legend>
           <Field label="Referral contact" htmlFor="referralId">
-            <select
-              id="referralId"
-              className={fieldClass}
-              value={values.referralId}
-              onChange={(e) => set("referralId", e.target.value)}
-            >
-              <option value="">None</option>
-              {contacts.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.name}
-                  {c.company ? ` (${c.company})` : ""}
-                </option>
-              ))}
-            </select>
+            <div className="flex gap-2">
+              <select
+                id="referralId"
+                className={fieldClass}
+                value={values.referralId}
+                onChange={(e) => set("referralId", e.target.value)}
+              >
+                <option value="">None</option>
+                {contactOptions.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.name}
+                    {c.company ? ` (${c.company})` : ""}
+                  </option>
+                ))}
+              </select>
+              <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                onClick={() => setShowNewContact(true)}
+                className="shrink-0"
+              >
+                <Plus size={14} />
+                New
+              </Button>
+            </div>
           </Field>
           <Field label="Compensation" htmlFor="compensation">
             <input
@@ -426,6 +441,19 @@ export function ApplicationForm({
             [...prev, company].sort((a, b) => a.name.localeCompare(b.name)),
           );
           set("companyId", company.id);
+        }}
+      />
+
+      <QuickAddContactModal
+        open={showNewContact}
+        onClose={() => setShowNewContact(false)}
+        onCreated={(contact) => {
+          setContactOptions((prev) =>
+            [...prev, { ...contact, company: null }].sort((a, b) =>
+              a.name.localeCompare(b.name),
+            ),
+          );
+          set("referralId", contact.id);
         }}
       />
     </>
