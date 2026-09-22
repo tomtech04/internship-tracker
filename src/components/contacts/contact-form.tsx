@@ -1,0 +1,291 @@
+"use client";
+
+import { useRouter } from "next/navigation";
+import { useState, useTransition } from "react";
+
+import { createContact, updateContact } from "@/actions/contacts";
+import { Button } from "@/components/common/button";
+import { Field, fieldClass } from "@/components/common/form-fields";
+import { RELATIONSHIPS } from "@/lib/constants";
+import { formatDateInput } from "@/lib/dates";
+
+export type ContactFormValues = {
+  name: string;
+  company: string;
+  role: string;
+  relationship: string;
+  howWeMet: string;
+  email: string;
+  linkedinUrl: string;
+  lastContactedDate: string;
+  nextStep: string;
+  notes: string;
+  applicationIds: string[];
+};
+
+const EMPTY_VALUES: ContactFormValues = {
+  name: "",
+  company: "",
+  role: "",
+  relationship: "Friend",
+  howWeMet: "",
+  email: "",
+  linkedinUrl: "",
+  lastContactedDate: "",
+  nextStep: "",
+  notes: "",
+  applicationIds: [],
+};
+
+export function contactToFormValues(contact: {
+  name: string;
+  company: string | null;
+  role: string | null;
+  relationship: string;
+  howWeMet: string | null;
+  email: string | null;
+  linkedinUrl: string | null;
+  lastContactedDate: Date | null;
+  nextStep: string | null;
+  notes: string | null;
+  applications: { id: string }[];
+}): ContactFormValues {
+  return {
+    name: contact.name,
+    company: contact.company ?? "",
+    role: contact.role ?? "",
+    relationship: contact.relationship,
+    howWeMet: contact.howWeMet ?? "",
+    email: contact.email ?? "",
+    linkedinUrl: contact.linkedinUrl ?? "",
+    lastContactedDate: formatDateInput(contact.lastContactedDate),
+    nextStep: contact.nextStep ?? "",
+    notes: contact.notes ?? "",
+    applicationIds: contact.applications.map((a) => a.id),
+  };
+}
+
+export function ContactForm({
+  mode,
+  contactId,
+  initialValues,
+  applications,
+}: {
+  mode: "create" | "edit";
+  contactId?: string;
+  initialValues?: ContactFormValues;
+  applications: { id: string; company: string; roleTitle: string }[];
+}) {
+  const [values, setValues] = useState<ContactFormValues>(
+    initialValues ?? EMPTY_VALUES,
+  );
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({});
+  const [error, setError] = useState<string | null>(null);
+  const [saved, setSaved] = useState(false);
+  const [isPending, startTransition] = useTransition();
+  const router = useRouter();
+
+  function set<K extends keyof ContactFormValues>(
+    key: K,
+    value: ContactFormValues[K],
+  ) {
+    setValues((v) => ({ ...v, [key]: value }));
+  }
+
+  function toggleApplication(id: string) {
+    setValues((v) => ({
+      ...v,
+      applicationIds: v.applicationIds.includes(id)
+        ? v.applicationIds.filter((a) => a !== id)
+        : [...v.applicationIds, id],
+    }));
+  }
+
+  function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setError(null);
+    setFieldErrors({});
+    setSaved(false);
+
+    startTransition(async () => {
+      const result =
+        mode === "create"
+          ? await createContact(values)
+          : await updateContact(contactId!, values);
+
+      if (!result.success) {
+        setError(result.error);
+        setFieldErrors(result.fieldErrors ?? {});
+        return;
+      }
+
+      if (mode === "create") {
+        router.push(`/contacts/${result.data.id}`);
+      } else {
+        setSaved(true);
+        router.refresh();
+        setTimeout(() => setSaved(false), 2000);
+      }
+    });
+  }
+
+  return (
+    <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+      {error && (
+        <p className="rounded-md bg-danger/10 px-3 py-2 text-sm text-danger">
+          {error}
+        </p>
+      )}
+
+      <fieldset className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <legend className="col-span-full mb-1 text-sm font-semibold text-foreground">
+          Basics
+        </legend>
+        <Field label="Name" htmlFor="name" required error={fieldErrors.name?.[0]}>
+          <input
+            id="name"
+            className={fieldClass}
+            value={values.name}
+            onChange={(e) => set("name", e.target.value)}
+            required
+          />
+        </Field>
+        <Field label="Relationship" htmlFor="relationship">
+          <select
+            id="relationship"
+            className={fieldClass}
+            value={values.relationship}
+            onChange={(e) => set("relationship", e.target.value)}
+          >
+            {RELATIONSHIPS.map((r) => (
+              <option key={r} value={r}>
+                {r}
+              </option>
+            ))}
+          </select>
+        </Field>
+        <Field label="Company" htmlFor="company">
+          <input
+            id="company"
+            className={fieldClass}
+            value={values.company}
+            onChange={(e) => set("company", e.target.value)}
+          />
+        </Field>
+        <Field label="Role" htmlFor="role">
+          <input
+            id="role"
+            className={fieldClass}
+            value={values.role}
+            onChange={(e) => set("role", e.target.value)}
+          />
+        </Field>
+        <Field label="How we met" htmlFor="howWeMet">
+          <input
+            id="howWeMet"
+            className={fieldClass}
+            value={values.howWeMet}
+            onChange={(e) => set("howWeMet", e.target.value)}
+          />
+        </Field>
+        <Field label="Last contacted" htmlFor="lastContactedDate">
+          <input
+            id="lastContactedDate"
+            type="date"
+            className={fieldClass}
+            value={values.lastContactedDate}
+            onChange={(e) => set("lastContactedDate", e.target.value)}
+          />
+        </Field>
+      </fieldset>
+
+      <fieldset className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <legend className="col-span-full mb-1 text-sm font-semibold text-foreground">
+          Contact info
+        </legend>
+        <Field label="Email" htmlFor="email" error={fieldErrors.email?.[0]}>
+          <input
+            id="email"
+            type="email"
+            className={fieldClass}
+            value={values.email}
+            onChange={(e) => set("email", e.target.value)}
+          />
+        </Field>
+        <Field label="LinkedIn URL" htmlFor="linkedinUrl" error={fieldErrors.linkedinUrl?.[0]}>
+          <input
+            id="linkedinUrl"
+            type="url"
+            placeholder="https://linkedin.com/in/..."
+            className={fieldClass}
+            value={values.linkedinUrl}
+            onChange={(e) => set("linkedinUrl", e.target.value)}
+          />
+        </Field>
+        <Field label="Next step" htmlFor="nextStep" hint="e.g. 'Ask for a referral', 'Send thank-you note'">
+          <input
+            id="nextStep"
+            className={fieldClass}
+            value={values.nextStep}
+            onChange={(e) => set("nextStep", e.target.value)}
+          />
+        </Field>
+      </fieldset>
+
+      <fieldset className="flex flex-col gap-2">
+        <legend className="mb-1 text-sm font-semibold text-foreground">
+          Notes
+        </legend>
+        <Field label="Notes" htmlFor="notes">
+          <textarea
+            id="notes"
+            rows={4}
+            className={fieldClass}
+            value={values.notes}
+            onChange={(e) => set("notes", e.target.value)}
+          />
+        </Field>
+      </fieldset>
+
+      <fieldset className="flex flex-col gap-2">
+        <legend className="mb-1 text-sm font-semibold text-foreground">
+          Linked applications
+        </legend>
+        {applications.length === 0 ? (
+          <p className="text-sm text-muted-foreground">
+            No applications to link yet.
+          </p>
+        ) : (
+          <div className="flex max-h-48 flex-col gap-1 overflow-y-auto rounded-md border border-border p-2">
+            {applications.map((app) => (
+              <label
+                key={app.id}
+                className="flex items-center gap-2 rounded px-1.5 py-1 text-sm hover:bg-muted"
+              >
+                <input
+                  type="checkbox"
+                  className="h-4 w-4 rounded border-input"
+                  checked={values.applicationIds.includes(app.id)}
+                  onChange={() => toggleApplication(app.id)}
+                />
+                <span className="text-foreground">{app.company}</span>
+                <span className="text-muted-foreground">— {app.roleTitle}</span>
+              </label>
+            ))}
+          </div>
+        )}
+      </fieldset>
+
+      <div className="flex items-center gap-3">
+        <Button type="submit" disabled={isPending}>
+          {isPending ? "Saving…" : mode === "create" ? "Create contact" : "Save changes"}
+        </Button>
+        {saved && (
+          <span className="text-sm text-green-600 dark:text-green-400">
+            Saved ✓
+          </span>
+        )}
+      </div>
+    </form>
+  );
+}
