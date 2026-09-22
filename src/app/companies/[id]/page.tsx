@@ -1,3 +1,4 @@
+import { Plus } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -60,9 +61,18 @@ export default async function CompanyDetailPage({
           />
         </div>
         <div>
-          <h3 className="text-foreground mb-2 text-sm font-semibold">
-            Applications ({company.applications.length})
-          </h3>
+          <div className="mb-2 flex items-center justify-between">
+            <h3 className="text-foreground text-sm font-semibold">
+              Applications ({company.applications.length})
+            </h3>
+            <Link
+              href={`/applications/new?companyId=${company.id}`}
+              className="text-primary flex items-center gap-1 text-xs font-medium hover:underline"
+            >
+              <Plus size={14} />
+              New application
+            </Link>
+          </div>
           {company.applications.length === 0 ? (
             <p className="text-muted-foreground text-sm">
               No applications under this company yet.

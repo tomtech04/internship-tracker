@@ -7,11 +7,12 @@ import { useState, useTransition } from "react";
 
 import { createApplication, updateApplication } from "@/actions/applications";
 import { findOrCreateCompanyByName } from "@/actions/companies";
-import { CLAUDE_AUTOFILL_TEMPLATE, parseAutofillText } from "@/lib/autofill";
 import { Button } from "@/components/common/button";
 import { Field, fieldClass } from "@/components/common/form-fields";
+import { PasteFromClaudeSection } from "@/components/common/paste-from-claude";
 import { QuickAddCompanyModal } from "@/components/companies/quick-add-company-modal";
 import { RESUME_VERSIONS, SOURCES, STATUSES, TIERS } from "@/lib/constants";
+import type { ParsedAutofillFields } from "@/lib/autofill";
 
 import {
   EMPTY_APPLICATION_FORM_VALUES,
@@ -29,17 +30,24 @@ export function ApplicationForm({
   mode,
   applicationId,
   initialValues,
+  defaultCompanyId,
   companies,
   contacts,
 }: {
   mode: "create" | "edit";
   applicationId?: string;
   initialValues?: ApplicationFormValues;
+  /** Pre-selects a company (e.g. arriving from that company's own page via
+   * ?companyId=...) — ignored once initialValues (edit mode) is set. */
+  defaultCompanyId?: string;
   companies: { id: string; name: string }[];
   contacts: { id: string; name: string; company: string | null }[];
 }) {
   const [values, setValues] = useState<ApplicationFormValues>(
-    initialValues ?? EMPTY_APPLICATION_FORM_VALUES,
+    initialValues ?? {
+      ...EMPTY_APPLICATION_FORM_VALUES,
+      companyId: defaultCompanyId ?? "",
+    },
   );
   const [companyOptions, setCompanyOptions] = useState(companies);
   const [showNewCompany, setShowNewCompany] = useState(false);
@@ -47,10 +55,6 @@ export function ApplicationForm({
   const [error, setError] = useState<string | null>(null);
   const [saved, setSaved] = useState(false);
   const [isPending, startTransition] = useTransition();
-  const [pasteText, setPasteText] = useState("");
-  const [autofillMessage, setAutofillMessage] = useState<string | null>(null);
-  const [isAutofilling, startAutofillTransition] = useTransition();
-  const [templateCopied, setTemplateCopied] = useState(false);
   const router = useRouter();
 
   function set<K extends keyof ApplicationFormValues>(
@@ -60,58 +64,35 @@ export function ApplicationForm({
     setValues((v) => ({ ...v, [key]: value }));
   }
 
-  function handleCopyTemplate() {
-    navigator.clipboard.writeText(CLAUDE_AUTOFILL_TEMPLATE).then(() => {
-      setTemplateCopied(true);
-      setTimeout(() => setTemplateCopied(false), 2000);
-    });
-  }
+  async function handleAutofillParsed(parsed: ParsedAutofillFields) {
+    setValues((v) => ({
+      ...v,
+      ...(parsed.roleTitle ? { roleTitle: parsed.roleTitle } : {}),
+      ...(parsed.team ? { team: parsed.team } : {}),
+      ...(parsed.location ? { location: parsed.location } : {}),
+      ...(parsed.jobUrl ? { jobUrl: parsed.jobUrl } : {}),
+      ...(parsed.reqId ? { reqId: parsed.reqId } : {}),
+      ...(parsed.source ? { source: parsed.source } : {}),
+      ...(parsed.resumeVersion ? { resumeVersion: parsed.resumeVersion } : {}),
+      ...(parsed.tier ? { tier: parsed.tier } : {}),
+      ...(parsed.status ? { status: parsed.status } : {}),
+      ...(parsed.dateApplied ? { dateApplied: parsed.dateApplied } : {}),
+      ...(parsed.deadline ? { deadline: parsed.deadline } : {}),
+      ...(parsed.compensation ? { compensation: parsed.compensation } : {}),
+      ...(parsed.notes ? { notes: parsed.notes } : {}),
+    }));
 
-  function handleAutofillParse() {
-    const parsed = parseAutofillText(pasteText);
-    const filledCount = Object.values(parsed).filter(Boolean).length;
-    if (filledCount === 0) {
-      setAutofillMessage("Couldn't find any recognizable fields in that text.");
-      return;
-    }
-
-    startAutofillTransition(async () => {
-      setValues((v) => ({
-        ...v,
-        ...(parsed.roleTitle ? { roleTitle: parsed.roleTitle } : {}),
-        ...(parsed.team ? { team: parsed.team } : {}),
-        ...(parsed.location ? { location: parsed.location } : {}),
-        ...(parsed.jobUrl ? { jobUrl: parsed.jobUrl } : {}),
-        ...(parsed.reqId ? { reqId: parsed.reqId } : {}),
-        ...(parsed.source ? { source: parsed.source } : {}),
-        ...(parsed.resumeVersion
-          ? { resumeVersion: parsed.resumeVersion }
-          : {}),
-        ...(parsed.tier ? { tier: parsed.tier } : {}),
-        ...(parsed.status ? { status: parsed.status } : {}),
-        ...(parsed.dateApplied ? { dateApplied: parsed.dateApplied } : {}),
-        ...(parsed.deadline ? { deadline: parsed.deadline } : {}),
-        ...(parsed.compensation ? { compensation: parsed.compensation } : {}),
-        ...(parsed.notes ? { notes: parsed.notes } : {}),
-      }));
-
-      if (parsed.companyName) {
-        const companyId = await findOrCreateCompanyByName(parsed.companyName);
-        setCompanyOptions((prev) =>
-          prev.some((c) => c.id === companyId)
-            ? prev
-            : [...prev, { id: companyId, name: parsed.companyName! }].sort(
-                (a, b) => a.name.localeCompare(b.name),
-              ),
-        );
-        setValues((v) => ({ ...v, companyId }));
-      }
-
-      setAutofillMessage(
-        `Filled in ${filledCount} field${filledCount === 1 ? "" : "s"} — review before saving.`,
+    if (parsed.companyName) {
+      const companyId = await findOrCreateCompanyByName(parsed.companyName);
+      setCompanyOptions((prev) =>
+        prev.some((c) => c.id === companyId)
+          ? prev
+          : [...prev, { id: companyId, name: parsed.companyName! }].sort(
+              (a, b) => a.name.localeCompare(b.name),
+            ),
       );
-      setPasteText("");
-    });
+      setValues((v) => ({ ...v, companyId }));
+    }
   }
 
   function handleSubmit(e: React.FormEvent) {
@@ -151,53 +132,7 @@ export function ApplicationForm({
           </p>
         )}
 
-        <details className="border-border bg-muted/30 rounded-lg border p-3">
-          <summary className="text-foreground cursor-pointer text-sm font-semibold">
-            Paste from Claude
-          </summary>
-          <div className="mt-3 flex flex-col gap-2">
-            <p className="text-muted-foreground text-xs">
-              Copy the template into a fresh Claude chat along with your
-              confirmation email or the job posting, then paste Claude&apos;s
-              reply below. See{" "}
-              <code className="bg-muted rounded px-1 py-0.5">
-                docs/claude-autofill-template.md
-              </code>{" "}
-              for the full explanation.
-            </p>
-            <div>
-              <Button
-                type="button"
-                variant="secondary"
-                size="sm"
-                onClick={handleCopyTemplate}
-              >
-                {templateCopied ? "Copied ✓" : "Copy template"}
-              </Button>
-            </div>
-            <textarea
-              aria-label="Paste Claude's reply here"
-              placeholder="Paste Claude's reply here…"
-              rows={4}
-              className={fieldClass}
-              value={pasteText}
-              onChange={(e) => setPasteText(e.target.value)}
-            />
-            {autofillMessage && (
-              <p className="text-muted-foreground text-xs">{autofillMessage}</p>
-            )}
-            <div>
-              <Button
-                type="button"
-                size="sm"
-                disabled={!pasteText.trim() || isAutofilling}
-                onClick={handleAutofillParse}
-              >
-                {isAutofilling ? "Filling…" : "Parse & fill form"}
-              </Button>
-            </div>
-          </div>
-        </details>
+        <PasteFromClaudeSection onParsed={handleAutofillParsed} />
 
         <fieldset className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <legend className="text-foreground col-span-full mb-1 text-sm font-semibold">

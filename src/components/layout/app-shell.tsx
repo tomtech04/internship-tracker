@@ -17,7 +17,13 @@ function isTypingTarget(target: EventTarget | null): boolean {
   );
 }
 
-export function AppShell({ children }: { children: ReactNode }) {
+export function AppShell({
+  children,
+  companies,
+}: {
+  children: ReactNode;
+  companies: { id: string; name: string }[];
+}) {
   const [quickAddOpen, setQuickAddOpen] = useState(false);
 
   const openQuickAdd = useCallback(() => setQuickAddOpen(true), []);
@@ -25,7 +31,10 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     function handleKeydown(e: KeyboardEvent) {
-      if (e.key.toLowerCase() !== "n") return;
+      // e.key isn't guaranteed to be a string for every dispatched event
+      // (some synthetic/IME-composition events omit it) — guard rather
+      // than assume, since this listener runs globally on every keydown.
+      if (e.key?.toLowerCase() !== "n") return;
       if (e.metaKey || e.ctrlKey || e.altKey) return;
       if (isTypingTarget(e.target)) return;
       e.preventDefault();
@@ -41,7 +50,11 @@ export function AppShell({ children }: { children: ReactNode }) {
       <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-6">
         {children}
       </main>
-      <QuickAddModal open={quickAddOpen} onClose={closeQuickAdd} />
+      <QuickAddModal
+        open={quickAddOpen}
+        onClose={closeQuickAdd}
+        companies={companies}
+      />
     </div>
   );
 }

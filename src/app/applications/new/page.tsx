@@ -1,8 +1,13 @@
 import { ApplicationForm } from "@/components/applications/application-form";
 import { getAllCompaniesBasic, getAllContactsBasic } from "@/lib/queries";
 
-export default async function NewApplicationPage() {
-  const [companies, contacts] = await Promise.all([
+export default async function NewApplicationPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ companyId?: string }>;
+}) {
+  const [{ companyId }, companies, contacts] = await Promise.all([
+    searchParams,
     getAllCompaniesBasic(),
     getAllContactsBasic(),
   ]);
@@ -14,6 +19,7 @@ export default async function NewApplicationPage() {
         mode="create"
         companies={companies}
         contacts={contacts}
+        defaultCompanyId={companyId}
       />
     </div>
   );
