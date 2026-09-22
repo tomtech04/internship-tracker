@@ -1,12 +1,24 @@
 -- CreateTable
+CREATE TABLE "Company" (
+    "id" TEXT NOT NULL PRIMARY KEY,
+    "name" TEXT NOT NULL,
+    "website" TEXT,
+    "portalUsername" TEXT,
+    "portalPassword" TEXT,
+    "notes" TEXT,
+    "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updatedAt" DATETIME NOT NULL
+);
+
+-- CreateTable
 CREATE TABLE "Application" (
     "id" TEXT NOT NULL PRIMARY KEY,
-    "company" TEXT NOT NULL,
     "roleTitle" TEXT NOT NULL,
     "team" TEXT,
     "location" TEXT,
     "jobUrl" TEXT,
     "reqId" TEXT,
+    "companyId" TEXT NOT NULL,
     "source" TEXT NOT NULL,
     "resumeVersion" TEXT NOT NULL,
     "tier" TEXT NOT NULL,
@@ -21,6 +33,7 @@ CREATE TABLE "Application" (
     "notes" TEXT,
     "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" DATETIME NOT NULL,
+    CONSTRAINT "Application_companyId_fkey" FOREIGN KEY ("companyId") REFERENCES "Company" ("id") ON DELETE CASCADE ON UPDATE CASCADE,
     CONSTRAINT "Application_referralId_fkey" FOREIGN KEY ("referralId") REFERENCES "Contact" ("id") ON DELETE SET NULL ON UPDATE CASCADE
 );
 
@@ -53,10 +66,16 @@ CREATE TABLE "Event" (
 );
 
 -- CreateIndex
+CREATE UNIQUE INDEX "Company_name_key" ON "Company"("name");
+
+-- CreateIndex
 CREATE INDEX "Application_status_idx" ON "Application"("status");
 
 -- CreateIndex
 CREATE INDEX "Application_referralId_idx" ON "Application"("referralId");
+
+-- CreateIndex
+CREATE INDEX "Application_companyId_idx" ON "Application"("companyId");
 
 -- CreateIndex
 CREATE INDEX "Event_applicationId_idx" ON "Event"("applicationId");

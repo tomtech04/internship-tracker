@@ -1,4 +1,16 @@
 {
+  "companies": [
+    {
+      "name": "Example Aerospace Co",
+      "website": "https://example-aerospace.example.com",
+      "portalUsername": "student@school.edu",
+      "portalPassword": "use-a-password-manager-for-real-ones"
+    },
+    {
+      "name": "Sample Robotics Inc",
+      "website": "https://sample-robotics.example.com"
+    }
+  ],
   "contacts": [
     {
       "name": "Jamie Rivera",
@@ -29,7 +41,7 @@
   ],
   "applications": [
     {
-      "company": "Example Aerospace Co",
+      "companyName": "Example Aerospace Co",
       "roleTitle": "Mechanical Engineering Intern",
       "team": "Structures",
       "location": "Hawthorne, CA",
@@ -48,7 +60,7 @@
       "notes": "Recruiter mentioned the team is expanding the structures test program for next summer."
     },
     {
-      "company": "Sample Robotics Inc",
+      "companyName": "Sample Robotics Inc",
       "roleTitle": "Robotics Hardware Intern",
       "team": "Manipulation",
       "location": "Pittsburgh, PA",
@@ -66,7 +78,7 @@
       ]
     },
     {
-      "company": "Placeholder Space Systems",
+      "companyName": "Placeholder Space Systems",
       "roleTitle": "Structures Intern",
       "location": "Denver, CO",
       "source": "Company Site",
@@ -79,7 +91,7 @@
       "notes": "Applied directly through their careers page — no ATS confirmation email received."
     },
     {
-      "company": "Demo Autonomy Labs",
+      "companyName": "Demo Autonomy Labs",
       "roleTitle": "Controls Intern",
       "location": "Remote",
       "source": "LinkedIn",
@@ -90,7 +102,7 @@
       "notes": "Application asks for a controls-focused cover letter — draft one before the deadline."
     },
     {
-      "company": "Fictional Launch Systems",
+      "companyName": "Fictional Launch Systems",
       "roleTitle": "Propulsion Intern",
       "team": "Test & Integration",
       "location": "Decatur, AL",
@@ -110,7 +122,7 @@
       "notes": "Verbal offer received — waiting on official paperwork.\n\n**Great team culture** based on interview conversations."
     },
     {
-      "company": "Generic Defense Robotics",
+      "companyName": "Generic Defense Robotics",
       "roleTitle": "Autonomy Software-Hardware Intern",
       "location": "Arlington, VA",
       "source": "Handshake",
@@ -128,7 +140,7 @@
       "notes": "Made it to the technical interview — rejection email said they went with someone with more ROS experience."
     },
     {
-      "company": "Sample Robotics Inc",
+      "companyName": "Sample Robotics Inc",
       "roleTitle": "Manufacturing Engineering Intern",
       "team": "Production",
       "location": "Pittsburgh, PA",

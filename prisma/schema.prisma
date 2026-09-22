@@ -11,14 +11,38 @@ datasource db {
   provider = "sqlite"
 }
 
+model Company {
+  id      String  @id @default(cuid())
+  name    String  @unique
+  website String?
+
+  // Portal login for this company's application system (Workday,
+  // Greenhouse, etc.) — shared across every application to this company.
+  // portalPassword is plaintext: this is a single-user local SQLite file
+  // with no auth layer, so there's no master password to encrypt it
+  // against. See README's security notes before relying on this instead
+  // of a real password manager.
+  portalUsername String?
+  portalPassword String?
+
+  notes String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  applications Application[]
+}
+
 model Application {
   id        String  @id @default(cuid())
-  company   String
   roleTitle String
   team      String?
   location  String?
   jobUrl    String?
   reqId     String?
+
+  companyId String
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
 
   source        String
   resumeVersion String
@@ -37,11 +61,6 @@ model Application {
   compensation   String?
   notes          String?
 
-  // Which email address you used to create the account on the company's
-  // application portal — with 50-80 applications it's easy to lose track,
-  // and companies never confirm this for you.
-  applicationEmail String?
-
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -49,6 +68,7 @@ model Application {
 
   @@index([status])
   @@index([referralId])
+  @@index([companyId])
 }
 
 model Contact {

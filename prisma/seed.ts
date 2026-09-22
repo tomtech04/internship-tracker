@@ -12,6 +12,14 @@ import {
 import type { Status } from "../src/lib/constants";
 import { parseLocalDateInput } from "../src/lib/dates";
 
+type SeedCompany = {
+  name: string;
+  website?: string;
+  portalUsername?: string;
+  portalPassword?: string;
+  notes?: string;
+};
+
 type SeedContact = {
   name: string;
   company?: string;
@@ -25,7 +33,10 @@ type SeedContact = {
 };
 
 type SeedApplication = {
-  company: string;
+  /** Matched case-insensitively against `companies[].name` — if there's
+   * no match, a bare company record is created automatically (same
+   * find-or-create behavior as quick add and CSV import). */
+  companyName: string;
   roleTitle: string;
   team?: string;
   location?: string;
@@ -53,7 +64,11 @@ type SeedApplication = {
   statusHistory?: { status: string; date: string }[];
 };
 
-type SeedData = { contacts: SeedContact[]; applications: SeedApplication[] };
+type SeedData = {
+  companies?: SeedCompany[];
+  contacts: SeedContact[];
+  applications: SeedApplication[];
+};
 
 const localPath = path.join(process.cwd(), "prisma", "seed.local.json");
 const examplePath = path.join(process.cwd(), "prisma", "seed.example.json");
@@ -72,6 +87,32 @@ async function main() {
   await prisma.event.deleteMany();
   await prisma.application.deleteMany();
   await prisma.contact.deleteMany();
+  await prisma.company.deleteMany();
+
+  const companyIdByLowerName = new Map<string, string>();
+  for (const c of data.companies ?? []) {
+    const created = await prisma.company.create({
+      data: {
+        name: c.name,
+        website: c.website,
+        portalUsername: c.portalUsername,
+        portalPassword: c.portalPassword,
+        notes: c.notes,
+      },
+    });
+    companyIdByLowerName.set(c.name.toLowerCase(), created.id);
+  }
+
+  async function resolveCompanyId(name: string): Promise<string> {
+    const key = name.trim().toLowerCase();
+    const existing = companyIdByLowerName.get(key);
+    if (existing) return existing;
+    const created = await prisma.company.create({
+      data: { name: name.trim() },
+    });
+    companyIdByLowerName.set(key, created.id);
+    return created.id;
+  }
 
   const contactIdByName = new Map<string, string>();
   for (const c of data.contacts) {
@@ -92,16 +133,21 @@ async function main() {
   }
 
   for (const a of data.applications) {
+    const companyId = await resolveCompanyId(a.companyName);
     const dateApplied = parseLocalDateInput(a.dateApplied);
     const explicitFollowUp = parseLocalDateInput(a.followUpDate);
     const followUpDate =
       explicitFollowUp ??
-      computeAutoFollowUpDate(a.status as Status, null, dateApplied ?? new Date()) ??
+      computeAutoFollowUpDate(
+        a.status as Status,
+        null,
+        dateApplied ?? new Date(),
+      ) ??
       undefined;
 
     const created = await prisma.application.create({
       data: {
-        company: a.company,
+        companyId,
         roleTitle: a.roleTitle,
         team: a.team,
         location: a.location,
@@ -121,9 +167,7 @@ async function main() {
         referralId: a.referralContactName
           ? contactIdByName.get(a.referralContactName)
           : undefined,
-        ...(a.updatedAt
-          ? { updatedAt: parseLocalDateInput(a.updatedAt) }
-          : {}),
+        ...(a.updatedAt ? { updatedAt: parseLocalDateInput(a.updatedAt) } : {}),
       },
     });
 
@@ -153,7 +197,7 @@ async function main() {
   }
 
   console.log(
-    `Seeded ${data.contacts.length} contacts and ${data.applications.length} applications.`,
+    `Seeded ${companyIdByLowerName.size} companies, ${data.contacts.length} contacts, and ${data.applications.length} applications.`,
   );
 }
 
