@@ -11,9 +11,10 @@ import {
   type Tier,
 } from "@/lib/constants";
 import { formatDateInput, parseLocalDateInput } from "@/lib/dates";
+import { normalizeEnum } from "@/lib/enum-utils";
 
 export const APPLICATION_CSV_FIELDS = [
-  "company",
+  "companyName",
   "roleTitle",
   "team",
   "location",
@@ -29,7 +30,6 @@ export const APPLICATION_CSV_FIELDS = [
   "nextInterviewDate",
   "itarRestricted",
   "compensation",
-  "applicationEmail",
   "notes",
   "referralName",
 ] as const;
@@ -37,7 +37,7 @@ export const APPLICATION_CSV_FIELDS = [
 export type ApplicationCsvField = (typeof APPLICATION_CSV_FIELDS)[number];
 
 export type ApplicationCsvRow = {
-  company: string;
+  companyName: string;
   roleTitle: string;
   team: string | null;
   location: string | null;
@@ -53,7 +53,6 @@ export type ApplicationCsvRow = {
   nextInterviewDate: Date | null;
   itarRestricted: boolean;
   compensation: string | null;
-  applicationEmail: string | null;
   notes: string | null;
   referralName: string | null;
 };
@@ -63,10 +62,12 @@ function dateToCsv(d: Date | null): string {
 }
 
 /** Serializes applications to a CSV string. Column order matches
- * APPLICATION_CSV_FIELDS so the export can be re-imported without mapping. */
+ * APPLICATION_CSV_FIELDS so the export can be re-imported without mapping.
+ * Portal credentials live on the Company record, not here, and are
+ * deliberately never included in this export. */
 export function applicationsToCSV(applications: ApplicationCsvRow[]): string {
   const rows = applications.map((app) => ({
-    company: app.company,
+    companyName: app.companyName,
     roleTitle: app.roleTitle,
     team: app.team ?? "",
     location: app.location ?? "",
@@ -82,7 +83,6 @@ export function applicationsToCSV(applications: ApplicationCsvRow[]): string {
     nextInterviewDate: dateToCsv(app.nextInterviewDate),
     itarRestricted: app.itarRestricted ? "true" : "false",
     compensation: app.compensation ?? "",
-    applicationEmail: app.applicationEmail ?? "",
     notes: app.notes ?? "",
     referralName: app.referralName ?? "",
   }));
@@ -109,18 +109,6 @@ export function parseCSV(csvText: string): {
   };
 }
 
-function normalizeEnum<T extends string>(
-  value: string | undefined,
-  allowed: readonly T[],
-  fallback: T,
-): T {
-  if (!value) return fallback;
-  const match = allowed.find(
-    (a) => a.toLowerCase() === value.trim().toLowerCase(),
-  );
-  return match ?? fallback;
-}
-
 function normalizeDate(value: string | undefined): Date | undefined {
   return parseLocalDateInput(value);
 }
@@ -135,7 +123,7 @@ export type ApplicationImportMapping = Partial<
 >;
 
 export type CoercedImportRow = {
-  company: string;
+  companyName: string;
   roleTitle: string;
   team?: string;
   location?: string;
@@ -151,7 +139,6 @@ export type CoercedImportRow = {
   nextInterviewDate?: Date;
   itarRestricted: boolean;
   compensation?: string;
-  applicationEmail?: string;
   notes?: string;
 };
 
@@ -160,7 +147,8 @@ export type CoercedImportRow = {
  * into typed, schema-ready values. Unrecognized enum values fall back to a
  * sensible default rather than rejecting the whole row — the caller is
  * expected to still run the result through `applicationSchema` for the
- * fields that truly are required (company, roleTitle).
+ * fields that truly are required (companyName, roleTitle). companyName is
+ * resolved to a companyId (finding or creating the company) by the caller.
  */
 export function mapCsvRowToApplicationInput(
   row: Record<string, string>,
@@ -172,14 +160,18 @@ export function mapCsvRowToApplicationInput(
   };
 
   return {
-    company: get("company") ?? "",
+    companyName: get("companyName") ?? "",
     roleTitle: get("roleTitle") ?? "",
     team: get("team") || undefined,
     location: get("location") || undefined,
     jobUrl: get("jobUrl") || undefined,
     reqId: get("reqId") || undefined,
     source: normalizeEnum(get("source"), SOURCES, "Other"),
-    resumeVersion: normalizeEnum(get("resumeVersion"), RESUME_VERSIONS, "Other"),
+    resumeVersion: normalizeEnum(
+      get("resumeVersion"),
+      RESUME_VERSIONS,
+      "Other",
+    ),
     tier: normalizeEnum(get("tier"), TIERS, "Target"),
     status: normalizeEnum(get("status"), STATUSES, "Wishlist"),
     dateApplied: normalizeDate(get("dateApplied")),
@@ -188,16 +180,13 @@ export function mapCsvRowToApplicationInput(
     nextInterviewDate: normalizeDate(get("nextInterviewDate")),
     itarRestricted: normalizeBoolean(get("itarRestricted")),
     compensation: get("compensation") || undefined,
-    applicationEmail: get("applicationEmail") || undefined,
     notes: get("notes") || undefined,
   };
 }
 
 /** Identity mapping used when a CSV was produced by our own export — column
  * names already match field names, so no manual mapping step is needed. */
-export function identityMapping(
-  headers: string[],
-): ApplicationImportMapping {
+export function identityMapping(headers: string[]): ApplicationImportMapping {
   const mapping: ApplicationImportMapping = {};
   for (const field of APPLICATION_CSV_FIELDS) {
     if (field === "referralName") continue;

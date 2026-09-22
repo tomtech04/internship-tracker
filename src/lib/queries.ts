@@ -2,7 +2,7 @@ import { prisma } from "@/lib/db";
 
 export function getAllApplications() {
   return prisma.application.findMany({
-    include: { referral: true, events: true },
+    include: { company: true, referral: true, events: true },
     orderBy: { updatedAt: "desc" },
   });
 }
@@ -15,6 +15,7 @@ export function getApplicationById(id: string) {
   return prisma.application.findUnique({
     where: { id },
     include: {
+      company: true,
       referral: true,
       events: { orderBy: { date: "desc" } },
     },
@@ -23,7 +24,7 @@ export function getApplicationById(id: string) {
 
 export function getAllContacts() {
   return prisma.contact.findMany({
-    include: { applications: true },
+    include: { applications: { include: { company: true } } },
     orderBy: { name: "asc" },
   });
 }
@@ -35,13 +36,38 @@ export type ContactWithApplications = Awaited<
 export function getContactById(id: string) {
   return prisma.contact.findUnique({
     where: { id },
-    include: { applications: true },
+    include: { applications: { include: { company: true } } },
   });
 }
 
 export function getAllContactsBasic() {
   return prisma.contact.findMany({
     select: { id: true, name: true, company: true },
+    orderBy: { name: "asc" },
+  });
+}
+
+export function getAllCompanies() {
+  return prisma.company.findMany({
+    include: { applications: true },
+    orderBy: { name: "asc" },
+  });
+}
+
+export type CompanyWithApplications = Awaited<
+  ReturnType<typeof getAllCompanies>
+>[number];
+
+export function getCompanyById(id: string) {
+  return prisma.company.findUnique({
+    where: { id },
+    include: { applications: true },
+  });
+}
+
+export function getAllCompaniesBasic() {
+  return prisma.company.findMany({
+    select: { id: true, name: true },
     orderBy: { name: "asc" },
   });
 }

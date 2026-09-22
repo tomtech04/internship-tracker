@@ -43,7 +43,11 @@ describe("computeAutoFollowUpDate", () => {
 
   it("does not override an existing follow-up date", () => {
     const existing = new Date(2026, 0, 20);
-    const result = computeAutoFollowUpDate("Applied", existing, new Date(2026, 0, 1));
+    const result = computeAutoFollowUpDate(
+      "Applied",
+      existing,
+      new Date(2026, 0, 1),
+    );
     expect(result).toBeNull();
   });
 
@@ -70,7 +74,9 @@ describe("isStale", () => {
     const now = new Date(2026, 5, 1);
     const updatedAt = new Date(2026, 3, 1); // long ago
     expect(isStale({ status: "Wishlist", updatedAt }, now)).toBe(false);
-    expect(isStale({ status: "Technical Interview", updatedAt }, now)).toBe(false);
+    expect(isStale({ status: "Technical Interview", updatedAt }, now)).toBe(
+      false,
+    );
   });
 });
 

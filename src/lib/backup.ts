@@ -10,6 +10,17 @@ const isoDateNullable = z
   .union([z.string(), z.date(), z.null(), z.undefined()])
   .transform((v) => (v == null ? null : new Date(v)));
 
+export const backupCompanySchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  website: z.string().nullable(),
+  portalUsername: z.string().nullable(),
+  portalPassword: z.string().nullable(),
+  notes: z.string().nullable(),
+  createdAt: isoDate,
+  updatedAt: isoDate,
+});
+
 export const backupContactSchema = z.object({
   id: z.string(),
   name: z.string(),
@@ -28,7 +39,7 @@ export const backupContactSchema = z.object({
 
 export const backupApplicationSchema = z.object({
   id: z.string(),
-  company: z.string(),
+  companyId: z.string(),
   roleTitle: z.string(),
   team: z.string().nullable(),
   location: z.string().nullable(),
@@ -45,7 +56,6 @@ export const backupApplicationSchema = z.object({
   referralId: z.string().nullable(),
   itarRestricted: z.boolean(),
   compensation: z.string().nullable(),
-  applicationEmail: z.string().nullable(),
   notes: z.string().nullable(),
   createdAt: isoDate,
   updatedAt: isoDate,
@@ -63,12 +73,14 @@ export const backupEventSchema = z.object({
 export const backupSchema = z.object({
   version: z.literal(1),
   exportedAt: z.string(),
+  companies: z.array(backupCompanySchema),
   contacts: z.array(backupContactSchema),
   applications: z.array(backupApplicationSchema),
   events: z.array(backupEventSchema),
 });
 
 export type Backup = z.infer<typeof backupSchema>;
+export type BackupCompany = z.infer<typeof backupCompanySchema>;
 export type BackupContact = z.infer<typeof backupContactSchema>;
 export type BackupApplication = z.infer<typeof backupApplicationSchema>;
 export type BackupEvent = z.infer<typeof backupEventSchema>;

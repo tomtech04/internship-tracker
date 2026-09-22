@@ -48,7 +48,7 @@ const optionalEmail = z
   });
 
 export const applicationSchema = z.object({
-  company: z.string().trim().min(1, "Company is required").max(200),
+  companyId: z.string().trim().min(1, "Company is required"),
   roleTitle: z.string().trim().min(1, "Role title is required").max(200),
   team: optionalString,
   location: optionalString,
@@ -70,13 +70,26 @@ export const applicationSchema = z.object({
   itarRestricted: z.coerce.boolean().default(false),
   compensation: optionalString,
   notes: optionalString,
-  applicationEmail: optionalEmail,
 });
 
 export type ApplicationInput = z.infer<typeof applicationSchema>;
 
+export const companySchema = z.object({
+  name: z.string().trim().min(1, "Company name is required").max(200),
+  website: optionalUrl,
+  portalUsername: optionalString,
+  portalPassword: optionalString,
+  notes: optionalString,
+});
+
+export type CompanyInput = z.infer<typeof companySchema>;
+
+/** Quick add resolves the company by name (finding or creating it) rather
+ * than requiring an existing companyId, so it stays a one-field-per-second
+ * fast path — full portal credentials can be added later on the company's
+ * own page. */
 export const quickAddSchema = z.object({
-  company: z.string().trim().min(1, "Company is required").max(200),
+  companyName: z.string().trim().min(1, "Company is required").max(200),
   roleTitle: z.string().trim().min(1, "Role title is required").max(200),
   jobUrl: optionalUrl,
   resumeVersion: z.enum(RESUME_VERSIONS),

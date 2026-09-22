@@ -1,7 +1,23 @@
-import { addDays, endOfDay, format, startOfDay, startOfWeek, subWeeks } from "date-fns";
+import {
+  addDays,
+  endOfDay,
+  format,
+  startOfDay,
+  startOfWeek,
+  subWeeks,
+} from "date-fns";
 
-import { calculateFunnel, calculateResponseRate, isStale } from "@/lib/application-logic";
-import { STATUSES, TERMINAL_STATUSES, UPCOMING_WINDOW_DAYS, type Status } from "@/lib/constants";
+import {
+  calculateFunnel,
+  calculateResponseRate,
+  isStale,
+} from "@/lib/application-logic";
+import {
+  STATUSES,
+  TERMINAL_STATUSES,
+  UPCOMING_WINDOW_DAYS,
+  type Status,
+} from "@/lib/constants";
 
 export type DashboardApplication = {
   id: string;
@@ -73,12 +89,12 @@ export function buildActionNeeded(applications: DashboardApplication[]) {
         a.nextInterviewDate >= today &&
         a.nextInterviewDate <= windowEnd,
     )
-    .sort((a, b) => a.nextInterviewDate!.getTime() - b.nextInterviewDate!.getTime());
+    .sort(
+      (a, b) => a.nextInterviewDate!.getTime() - b.nextInterviewDate!.getTime(),
+    );
 
   const deadlinesUpcoming = active
-    .filter(
-      (a) => a.deadline && a.deadline >= today && a.deadline <= windowEnd,
-    )
+    .filter((a) => a.deadline && a.deadline >= today && a.deadline <= windowEnd)
     .sort((a, b) => a.deadline!.getTime() - b.deadline!.getTime());
 
   return { followUpsDue, interviewsUpcoming, deadlinesUpcoming };

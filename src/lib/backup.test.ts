@@ -4,7 +4,7 @@ import { backupApplicationSchema } from "./backup";
 
 const BASE = {
   id: "app_1",
-  company: "Acme",
+  companyId: "company_1",
   roleTitle: "Intern",
   team: null,
   location: null,
@@ -17,7 +17,6 @@ const BASE = {
   referralId: null,
   itarRestricted: false,
   compensation: null,
-  applicationEmail: null,
   notes: null,
   createdAt: "2026-01-01T00:00:00.000Z",
   updatedAt: "2026-01-01T00:00:00.000Z",

@@ -10,7 +10,7 @@ import {
 
 const SAMPLE_ROWS: ApplicationCsvRow[] = [
   {
-    company: "Acme Aerospace",
+    companyName: "Acme Aerospace",
     roleTitle: "Mechanical Engineering Intern",
     team: "Structures",
     location: "Denver, CO",
@@ -26,12 +26,11 @@ const SAMPLE_ROWS: ApplicationCsvRow[] = [
     nextInterviewDate: null,
     itarRestricted: true,
     compensation: "$40/hr",
-    applicationEmail: "student@school.edu",
     notes: "Met the recruiter at the fall career fair.",
     referralName: "Jamie Rivera",
   },
   {
-    company: "Beta Robotics",
+    companyName: "Beta Robotics",
     roleTitle: "Robotics Intern",
     team: null,
     location: null,
@@ -47,7 +46,6 @@ const SAMPLE_ROWS: ApplicationCsvRow[] = [
     nextInterviewDate: null,
     itarRestricted: false,
     compensation: null,
-    applicationEmail: null,
     notes: null,
     referralName: null,
   },
@@ -59,14 +57,15 @@ describe("applicationsToCSV / parseCSV round trip", () => {
     const { headers, rows } = parseCSV(csv);
 
     expect(rows).toHaveLength(2);
-    expect(headers).toContain("company");
-    expect(headers).toContain("applicationEmail");
+    expect(headers).toContain("companyName");
 
     const mapping = identityMapping(headers);
-    const roundTripped = rows.map((row) => mapCsvRowToApplicationInput(row, mapping));
+    const roundTripped = rows.map((row) =>
+      mapCsvRowToApplicationInput(row, mapping),
+    );
 
     expect(roundTripped[0]).toMatchObject({
-      company: "Acme Aerospace",
+      companyName: "Acme Aerospace",
       roleTitle: "Mechanical Engineering Intern",
       team: "Structures",
       location: "Denver, CO",
@@ -76,13 +75,12 @@ describe("applicationsToCSV / parseCSV round trip", () => {
       status: "Applied",
       itarRestricted: true,
       compensation: "$40/hr",
-      applicationEmail: "student@school.edu",
     });
     expect(roundTripped[0].dateApplied).toEqual(new Date(2026, 7, 10));
     expect(roundTripped[0].followUpDate).toEqual(new Date(2026, 7, 24));
 
     expect(roundTripped[1]).toMatchObject({
-      company: "Beta Robotics",
+      companyName: "Beta Robotics",
       roleTitle: "Robotics Intern",
       source: "LinkedIn",
       resumeVersion: "Robotics",
@@ -106,16 +104,20 @@ describe("mapCsvRowToApplicationInput", () => {
   it("falls back to sensible defaults for unmapped or unrecognized enum values", () => {
     const result = mapCsvRowToApplicationInput(
       { Company: "Unknown Co", Role: "Some Role", Status: "not-a-real-status" },
-      { company: "Company", roleTitle: "Role", status: "Status" },
+      { companyName: "Company", roleTitle: "Role", status: "Status" },
     );
-    expect(result.company).toBe("Unknown Co");
+    expect(result.companyName).toBe("Unknown Co");
     expect(result.status).toBe("Wishlist");
     expect(result.source).toBe("Other");
     expect(result.tier).toBe("Target");
   });
 
   it("parses boolean-ish strings for itarRestricted", () => {
-    const mapping = { company: "c", roleTitle: "r", itarRestricted: "itar" };
+    const mapping = {
+      companyName: "c",
+      roleTitle: "r",
+      itarRestricted: "itar",
+    };
     expect(
       mapCsvRowToApplicationInput({ c: "A", r: "B", itar: "yes" }, mapping)
         .itarRestricted,

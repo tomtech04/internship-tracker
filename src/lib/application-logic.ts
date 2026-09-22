@@ -35,9 +35,7 @@ export function buildStatusChangeEvent(
 export function parseStatusChangeEvent(
   description: string,
 ): { from: Status; to: Status } | null {
-  const match = description.match(
-    /^Status changed: (.+?) → (.+)$/u,
-  );
+  const match = description.match(/^Status changed: (.+?) → (.+)$/u);
   if (!match) return null;
   const [, from, to] = match;
   if (!(from in STATUS_RANK) || !(to in STATUS_RANK)) return null;
