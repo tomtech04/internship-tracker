@@ -1,0 +1,141 @@
+{
+  "contacts": [
+    {
+      "name": "Jamie Rivera",
+      "company": "Example Aerospace Co",
+      "role": "Senior Technical Recruiter",
+      "relationship": "Recruiter",
+      "howWeMet": "Career fair booth",
+      "email": "jamie.rivera@example.com",
+      "linkedinUrl": "https://linkedin.com/in/example-jamie-rivera",
+      "nextStep": "Follow up after the phone screen"
+    },
+    {
+      "name": "Alex Chen",
+      "company": "Sample Robotics Inc",
+      "role": "Mechanical Engineering Team Lead",
+      "relationship": "Alumni",
+      "howWeMet": "University alumni network",
+      "email": "alex.chen@example.com",
+      "linkedinUrl": "https://linkedin.com/in/example-alex-chen",
+      "nextStep": "Ask about a formal referral once the resume is finalized"
+    },
+    {
+      "name": "Sam Patel",
+      "relationship": "Friend",
+      "howWeMet": "Freshman year dorm",
+      "notes": "Not an engineer, but knows a few people at Placeholder Space Systems through a roommate."
+    }
+  ],
+  "applications": [
+    {
+      "company": "Example Aerospace Co",
+      "roleTitle": "Mechanical Engineering Intern",
+      "team": "Structures",
+      "location": "Hawthorne, CA",
+      "source": "Career Fair",
+      "resumeVersion": "Space",
+      "tier": "Dream",
+      "status": "Phone Screen",
+      "dateApplied": "2026-08-10",
+      "nextInterviewDate": "2026-09-25",
+      "referralContactName": "Jamie Rivera",
+      "statusHistory": [
+        { "status": "Applied", "date": "2026-08-10" },
+        { "status": "Online Assessment", "date": "2026-08-20" },
+        { "status": "Phone Screen", "date": "2026-09-02" }
+      ],
+      "notes": "Recruiter mentioned the team is expanding the structures test program for next summer."
+    },
+    {
+      "company": "Sample Robotics Inc",
+      "roleTitle": "Robotics Hardware Intern",
+      "team": "Manipulation",
+      "location": "Pittsburgh, PA",
+      "source": "Referral",
+      "resumeVersion": "Robotics",
+      "tier": "Target",
+      "status": "Technical Interview",
+      "dateApplied": "2026-08-01",
+      "nextInterviewDate": "2026-09-24",
+      "referralContactName": "Alex Chen",
+      "statusHistory": [
+        { "status": "Applied", "date": "2026-08-01" },
+        { "status": "Phone Screen", "date": "2026-08-14" },
+        { "status": "Technical Interview", "date": "2026-09-01" }
+      ]
+    },
+    {
+      "company": "Placeholder Space Systems",
+      "roleTitle": "Structures Intern",
+      "location": "Denver, CO",
+      "source": "Company Site",
+      "resumeVersion": "Space",
+      "tier": "Dream",
+      "status": "Applied",
+      "dateApplied": "2026-08-25",
+      "followUpDate": "2026-09-08",
+      "updatedAt": "2026-08-25",
+      "notes": "Applied directly through their careers page — no ATS confirmation email received."
+    },
+    {
+      "company": "Demo Autonomy Labs",
+      "roleTitle": "Controls Intern",
+      "location": "Remote",
+      "source": "LinkedIn",
+      "resumeVersion": "Robotics",
+      "tier": "Target",
+      "status": "Wishlist",
+      "deadline": "2026-09-27",
+      "notes": "Application asks for a controls-focused cover letter — draft one before the deadline."
+    },
+    {
+      "company": "Fictional Launch Systems",
+      "roleTitle": "Propulsion Intern",
+      "team": "Test & Integration",
+      "location": "Decatur, AL",
+      "source": "Handshake",
+      "resumeVersion": "Space",
+      "tier": "Dream",
+      "status": "Offer",
+      "dateApplied": "2026-07-01",
+      "compensation": "$42/hr + relocation assistance",
+      "statusHistory": [
+        { "status": "Applied", "date": "2026-07-01" },
+        { "status": "Online Assessment", "date": "2026-07-10" },
+        { "status": "Technical Interview", "date": "2026-07-22" },
+        { "status": "Final Round", "date": "2026-08-05" },
+        { "status": "Offer", "date": "2026-08-18" }
+      ],
+      "notes": "Verbal offer received — waiting on official paperwork.\n\n**Great team culture** based on interview conversations."
+    },
+    {
+      "company": "Generic Defense Robotics",
+      "roleTitle": "Autonomy Software-Hardware Intern",
+      "location": "Arlington, VA",
+      "source": "Handshake",
+      "resumeVersion": "Robotics",
+      "tier": "Safety",
+      "status": "Rejected",
+      "dateApplied": "2026-07-15",
+      "itarRestricted": true,
+      "statusHistory": [
+        { "status": "Applied", "date": "2026-07-15" },
+        { "status": "Online Assessment", "date": "2026-07-25" },
+        { "status": "Technical Interview", "date": "2026-08-08" },
+        { "status": "Rejected", "date": "2026-08-22" }
+      ],
+      "notes": "Made it to the technical interview — rejection email said they went with someone with more ROS experience."
+    },
+    {
+      "company": "Sample Robotics Inc",
+      "roleTitle": "Manufacturing Engineering Intern",
+      "team": "Production",
+      "location": "Pittsburgh, PA",
+      "source": "Company Site",
+      "resumeVersion": "Other",
+      "tier": "Safety",
+      "status": "Wishlist"
+    }
+  ]
+}

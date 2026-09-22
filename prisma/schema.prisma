@@ -1,0 +1,87 @@
+// Prisma schema for the internship application tracker.
+// SQLite has no native enum support, so status/source/tier/etc. are plain
+// strings whose allowed values are enforced by Zod in src/lib/validation.ts.
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Application {
+  id        String  @id @default(cuid())
+  company   String
+  roleTitle String
+  team      String?
+  location  String?
+  jobUrl    String?
+  reqId     String?
+
+  source        String
+  resumeVersion String
+  tier          String
+  status        String @default("Wishlist")
+
+  dateApplied       DateTime?
+  deadline          DateTime?
+  followUpDate      DateTime?
+  nextInterviewDate DateTime?
+
+  referralId String?
+  referral   Contact? @relation(fields: [referralId], references: [id])
+
+  itarRestricted Boolean @default(false)
+  compensation   String?
+  notes          String?
+
+  // Which email address you used to create the account on the company's
+  // application portal — with 50-80 applications it's easy to lose track,
+  // and companies never confirm this for you.
+  applicationEmail String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  events Event[]
+
+  @@index([status])
+  @@index([referralId])
+}
+
+model Contact {
+  id   String @id @default(cuid())
+  name String
+
+  company      String?
+  role         String?
+  relationship String
+  howWeMet     String?
+  email        String?
+  linkedinUrl  String?
+
+  lastContactedDate DateTime?
+  nextStep          String?
+  notes             String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  applications Application[]
+}
+
+model Event {
+  id            String      @id @default(cuid())
+  applicationId String
+  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  type        String
+  date        DateTime @default(now())
+  description String
+
+  createdAt DateTime @default(now())
+
+  @@index([applicationId])
+}
