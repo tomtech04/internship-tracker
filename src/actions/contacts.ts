@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 
 import { prisma } from "@/lib/db";
-import { contactSchema, type ContactInput } from "@/lib/validation";
+import { contactSchema } from "@/lib/validation";
 
 import type { ActionResult } from "./applications";
 
@@ -15,7 +15,7 @@ function revalidateContactPaths(id?: string) {
 }
 
 export async function createContact(
-  input: ContactInput,
+  input: unknown,
 ): Promise<ActionResult> {
   const parsed = contactSchema.safeParse(input);
   if (!parsed.success) {
@@ -42,7 +42,7 @@ export async function createContact(
 
 export async function updateContact(
   id: string,
-  input: ContactInput,
+  input: unknown,
 ): Promise<ActionResult> {
   const parsed = contactSchema.safeParse(input);
   if (!parsed.success) {

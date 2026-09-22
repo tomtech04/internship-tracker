@@ -2,11 +2,9 @@ import { ExternalLink } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { ApplicationForm } from "@/components/applications/application-form";
+import { applicationToFormValues } from "@/components/applications/application-form-values";
 import { DeleteApplicationButton } from "@/components/applications/delete-application-button";
-import {
-  ApplicationForm,
-  applicationToFormValues,
-} from "@/components/applications/application-form";
 import { EventTimeline } from "@/components/applications/event-timeline";
 import { StatusBadge, TierBadge } from "@/components/common/badges";
 import { MarkdownView } from "@/components/common/markdown-view";

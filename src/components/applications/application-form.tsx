@@ -6,101 +6,19 @@ import { useState, useTransition } from "react";
 import { createApplication, updateApplication } from "@/actions/applications";
 import { Button } from "@/components/common/button";
 import { Field, fieldClass } from "@/components/common/form-fields";
+import { RESUME_VERSIONS, SOURCES, STATUSES, TIERS } from "@/lib/constants";
+
 import {
-  RESUME_VERSIONS,
-  SOURCES,
-  STATUSES,
-  TIERS,
-} from "@/lib/constants";
-import { formatDateInput } from "@/lib/dates";
+  EMPTY_APPLICATION_FORM_VALUES,
+  type ApplicationFormValues,
+} from "./application-form-values";
 
-export type ApplicationFormValues = {
-  company: string;
-  roleTitle: string;
-  team: string;
-  location: string;
-  jobUrl: string;
-  reqId: string;
-  source: string;
-  resumeVersion: string;
-  tier: string;
-  status: string;
-  dateApplied: string;
-  deadline: string;
-  followUpDate: string;
-  nextInterviewDate: string;
-  referralId: string;
-  itarRestricted: boolean;
-  compensation: string;
-  applicationEmail: string;
-  notes: string;
-};
-
-const EMPTY_VALUES: ApplicationFormValues = {
-  company: "",
-  roleTitle: "",
-  team: "",
-  location: "",
-  jobUrl: "",
-  reqId: "",
-  source: "Company Site",
-  resumeVersion: "Space",
-  tier: "Target",
-  status: "Wishlist",
-  dateApplied: "",
-  deadline: "",
-  followUpDate: "",
-  nextInterviewDate: "",
-  referralId: "",
-  itarRestricted: false,
-  compensation: "",
-  applicationEmail: "",
-  notes: "",
-};
-
-export function applicationToFormValues(app: {
-  company: string;
-  roleTitle: string;
-  team: string | null;
-  location: string | null;
-  jobUrl: string | null;
-  reqId: string | null;
-  source: string;
-  resumeVersion: string;
-  tier: string;
-  status: string;
-  dateApplied: Date | null;
-  deadline: Date | null;
-  followUpDate: Date | null;
-  nextInterviewDate: Date | null;
-  referralId: string | null;
-  itarRestricted: boolean;
-  compensation: string | null;
-  applicationEmail: string | null;
-  notes: string | null;
-}): ApplicationFormValues {
-  return {
-    company: app.company,
-    roleTitle: app.roleTitle,
-    team: app.team ?? "",
-    location: app.location ?? "",
-    jobUrl: app.jobUrl ?? "",
-    reqId: app.reqId ?? "",
-    source: app.source,
-    resumeVersion: app.resumeVersion,
-    tier: app.tier,
-    status: app.status,
-    dateApplied: formatDateInput(app.dateApplied),
-    deadline: formatDateInput(app.deadline),
-    followUpDate: formatDateInput(app.followUpDate),
-    nextInterviewDate: formatDateInput(app.nextInterviewDate),
-    referralId: app.referralId ?? "",
-    itarRestricted: app.itarRestricted,
-    compensation: app.compensation ?? "",
-    applicationEmail: app.applicationEmail ?? "",
-    notes: app.notes ?? "",
-  };
-}
+// Re-exported for convenience for other CLIENT components — but never
+// import applicationToFormValues from here in a Server Component: every
+// export of a "use client" file is a client-only reference, even a plain
+// function. Server Components must import it straight from
+// "./application-form-values" instead (see page.tsx for both examples).
+export type { ApplicationFormValues } from "./application-form-values";
 
 export function ApplicationForm({
   mode,
@@ -114,7 +32,7 @@ export function ApplicationForm({
   contacts: { id: string; name: string; company: string | null }[];
 }) {
   const [values, setValues] = useState<ApplicationFormValues>(
-    initialValues ?? EMPTY_VALUES,
+    initialValues ?? EMPTY_APPLICATION_FORM_VALUES,
   );
   const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({});
   const [error, setError] = useState<string | null>(null);

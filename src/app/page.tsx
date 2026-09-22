@@ -8,6 +8,7 @@ import { ResponseRateCard } from "@/components/dashboard/response-rate-card";
 import { StalePanel } from "@/components/dashboard/stale-panel";
 import { StatusCountsGrid } from "@/components/dashboard/status-counts-grid";
 import { WeeklyChartCard } from "@/components/dashboard/weekly-chart-card";
+import type { Status } from "@/lib/constants";
 import {
   buildActionNeeded,
   buildFunnelData,
@@ -39,12 +40,17 @@ export default async function DashboardPage() {
     );
   }
 
-  const statusCounts = buildStatusCounts(applications);
-  const funnelData = buildFunnelData(applications);
-  const responseRate = buildResponseRate(applications);
-  const weeklyData = buildWeeklySubmissions(applications);
-  const actionNeeded = buildActionNeeded(applications);
-  const staleApps = buildStaleApplications(applications);
+  const typedApplications = applications.map((a) => ({
+    ...a,
+    status: a.status as Status,
+  }));
+
+  const statusCounts = buildStatusCounts(typedApplications);
+  const funnelData = buildFunnelData(typedApplications);
+  const responseRate = buildResponseRate(typedApplications);
+  const weeklyData = buildWeeklySubmissions(typedApplications);
+  const actionNeeded = buildActionNeeded(typedApplications);
+  const staleApps = buildStaleApplications(typedApplications);
 
   return (
     <div className="flex flex-col gap-4">

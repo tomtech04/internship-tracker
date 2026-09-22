@@ -3,12 +3,12 @@
 import { revalidatePath } from "next/cache";
 
 import { prisma } from "@/lib/db";
-import { manualEventSchema, type ManualEventInput } from "@/lib/validation";
+import { manualEventSchema } from "@/lib/validation";
 
 import type { ActionResult } from "./applications";
 
 export async function addManualEvent(
-  input: ManualEventInput,
+  input: unknown,
 ): Promise<ActionResult> {
   const parsed = manualEventSchema.safeParse(input);
   if (!parsed.success) {

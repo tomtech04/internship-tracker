@@ -1,12 +1,10 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import {
-  ContactForm,
-  contactToFormValues,
-} from "@/components/contacts/contact-form";
-import { DeleteContactButton } from "@/components/contacts/delete-contact-button";
 import { StatusBadge } from "@/components/common/badges";
+import { ContactForm } from "@/components/contacts/contact-form";
+import { contactToFormValues } from "@/components/contacts/contact-form-values";
+import { DeleteContactButton } from "@/components/contacts/delete-contact-button";
 import { getAllApplications, getContactById } from "@/lib/queries";
 
 export default async function ContactDetailPage({

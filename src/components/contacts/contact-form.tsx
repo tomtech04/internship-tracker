@@ -7,63 +7,18 @@ import { createContact, updateContact } from "@/actions/contacts";
 import { Button } from "@/components/common/button";
 import { Field, fieldClass } from "@/components/common/form-fields";
 import { RELATIONSHIPS } from "@/lib/constants";
-import { formatDateInput } from "@/lib/dates";
 
-export type ContactFormValues = {
-  name: string;
-  company: string;
-  role: string;
-  relationship: string;
-  howWeMet: string;
-  email: string;
-  linkedinUrl: string;
-  lastContactedDate: string;
-  nextStep: string;
-  notes: string;
-  applicationIds: string[];
-};
+import {
+  EMPTY_CONTACT_FORM_VALUES,
+  type ContactFormValues,
+} from "./contact-form-values";
 
-const EMPTY_VALUES: ContactFormValues = {
-  name: "",
-  company: "",
-  role: "",
-  relationship: "Friend",
-  howWeMet: "",
-  email: "",
-  linkedinUrl: "",
-  lastContactedDate: "",
-  nextStep: "",
-  notes: "",
-  applicationIds: [],
-};
-
-export function contactToFormValues(contact: {
-  name: string;
-  company: string | null;
-  role: string | null;
-  relationship: string;
-  howWeMet: string | null;
-  email: string | null;
-  linkedinUrl: string | null;
-  lastContactedDate: Date | null;
-  nextStep: string | null;
-  notes: string | null;
-  applications: { id: string }[];
-}): ContactFormValues {
-  return {
-    name: contact.name,
-    company: contact.company ?? "",
-    role: contact.role ?? "",
-    relationship: contact.relationship,
-    howWeMet: contact.howWeMet ?? "",
-    email: contact.email ?? "",
-    linkedinUrl: contact.linkedinUrl ?? "",
-    lastContactedDate: formatDateInput(contact.lastContactedDate),
-    nextStep: contact.nextStep ?? "",
-    notes: contact.notes ?? "",
-    applicationIds: contact.applications.map((a) => a.id),
-  };
-}
+// Re-exported for convenience for other CLIENT components — but never
+// import contactToFormValues from here in a Server Component: every export
+// of a "use client" file is a client-only reference, even a plain
+// function. Server Components must import it straight from
+// "./contact-form-values" instead.
+export type { ContactFormValues } from "./contact-form-values";
 
 export function ContactForm({
   mode,
@@ -77,7 +32,7 @@ export function ContactForm({
   applications: { id: string; company: string; roleTitle: string }[];
 }) {
   const [values, setValues] = useState<ContactFormValues>(
-    initialValues ?? EMPTY_VALUES,
+    initialValues ?? EMPTY_CONTACT_FORM_VALUES,
   );
   const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({});
   const [error, setError] = useState<string | null>(null);

@@ -8,12 +8,7 @@ import {
 } from "@/lib/application-logic";
 import type { Status } from "@/lib/constants";
 import { prisma } from "@/lib/db";
-import {
-  applicationSchema,
-  quickAddSchema,
-  type ApplicationInput,
-  type QuickAddInput,
-} from "@/lib/validation";
+import { applicationSchema, quickAddSchema } from "@/lib/validation";
 
 export type ActionResult<T = { id: string }> =
   | { success: true; data: T }
@@ -27,7 +22,7 @@ function revalidateApplicationPaths(id?: string) {
 }
 
 export async function createApplication(
-  input: ApplicationInput,
+  input: unknown,
 ): Promise<ActionResult> {
   const parsed = applicationSchema.safeParse(input);
   if (!parsed.success) {
@@ -56,7 +51,7 @@ export async function createApplication(
 }
 
 export async function quickAddApplication(
-  input: QuickAddInput,
+  input: unknown,
 ): Promise<ActionResult> {
   const parsed = quickAddSchema.safeParse(input);
   if (!parsed.success) {
@@ -88,7 +83,7 @@ export async function quickAddApplication(
 
 export async function updateApplication(
   id: string,
-  input: ApplicationInput,
+  input: unknown,
 ): Promise<ActionResult> {
   const parsed = applicationSchema.safeParse(input);
   if (!parsed.success) {

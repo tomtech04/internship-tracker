@@ -77,7 +77,7 @@ describe("isStale", () => {
 describe("maxRankReached / calculateResponseRate", () => {
   it("credits an application for the highest stage it ever reached", () => {
     const rejectedAfterInterview = {
-      status: "Rejected",
+      status: "Rejected" as const,
       events: [
         {
           type: "Status Change",
