@@ -25,6 +25,10 @@ no auth, no server to pay for.
   aren't shown as columns — see [Defaults chosen](#defaults-chosen).
 - **Table view** — sortable, filterable (status, tier, resume version,
   source), full-text search, and inline status editing.
+- **Companies** — every application belongs to one company; company
+  records hold a website and the login (username/email + password) for
+  that company's application portal, shared across every role you apply
+  to there. See [Companies & portal logins](#companies--portal-logins).
 - **Application detail page** — edit every field, see the full timeline,
   log manual timeline entries (Note/Email/Interview/Follow-up), and link a
   referral contact.
@@ -32,6 +36,12 @@ no auth, no server to pay for.
   contact is linked to, editable from either side of the relationship.
 - **Quick add** — press <kbd>N</kbd> anywhere to open a fast modal (company,
   role, URL, resume version, status) for logging a role in a few seconds.
+  The company is matched or created by name automatically.
+- **Autofill from a Claude chat** — paste a confirmation email or job
+  posting into a separate Claude conversation using the provided template,
+  then paste Claude's reply back into the New Application form to fill in
+  every field at once. See
+  [docs/claude-autofill-template.md](docs/claude-autofill-template.md).
 - **Import / export** — full JSON backup and restore, CSV export, and CSV
   import with a column-mapping wizard for spreadsheets you already have.
 - **Calendar export** — download an `.ics` of upcoming interviews and
@@ -83,6 +93,29 @@ data (see below).
   about — use the JSON backup/export feature for that data instead (it's
   a completely separate mechanism from seeding).
 
+## Companies & portal logins
+
+Every application belongs to exactly one company. When you create an
+application you pick an existing company or add one inline (a small "+
+New" button opens a modal) without leaving the form; quick add and CSV
+import instead match or create the company by name automatically.
+
+A company record can also hold the login for that company's application
+portal (Workday, Greenhouse, iCIMS, whatever they use) — one username and
+password, shared across every application you file there, editable from
+the company's own page (`/companies/[id]`). **This is stored in plain
+text** in the local SQLite file: there's no master password or encryption
+layer in this app (it was explicitly built with "no authentication
+needed"), so there's nothing to encrypt the password against that isn't
+also sitting right next to it. That's a reasonable trade for a personal,
+single-user, local-only tool, but don't treat it as a real password
+manager — and know that the full JSON backup export includes these
+passwords in plain text too (the CSV export does not).
+
+Deleting a company deletes every application under it (you're asked to
+confirm, and the confirmation names the count) — an application can't
+exist without a company, so there's no orphaned state to fall back to.
+
 ## Backup & restore
 
 All of this lives under **Data** (`/data`) in the app:
@@ -105,19 +138,19 @@ gives you something human-readable and portable across schema changes.
 
 ## Scripts
 
-| Command | What it does |
-| --- | --- |
-| `npm run dev` | Start the dev server |
-| `npm run build` | Regenerate the Prisma Client and build for production |
-| `npm run start` | Run the production build |
-| `npm run lint` | ESLint |
-| `npm run typecheck` | `tsc --noEmit` |
-| `npm run test` | Vitest (single run) |
-| `npm run test:watch` | Vitest (watch mode) |
-| `npm run format` / `format:check` | Prettier |
-| `npm run setup` | Migrate + seed (see above) |
-| `npm run db:seed` | Re-seed without migrating |
-| `npm run db:studio` | Open Prisma Studio to browse the database |
+| Command                           | What it does                                          |
+| --------------------------------- | ----------------------------------------------------- |
+| `npm run dev`                     | Start the dev server                                  |
+| `npm run build`                   | Regenerate the Prisma Client and build for production |
+| `npm run start`                   | Run the production build                              |
+| `npm run lint`                    | ESLint                                                |
+| `npm run typecheck`               | `tsc --noEmit`                                        |
+| `npm run test`                    | Vitest (single run)                                   |
+| `npm run test:watch`              | Vitest (watch mode)                                   |
+| `npm run format` / `format:check` | Prettier                                              |
+| `npm run setup`                   | Migrate + seed (see above)                            |
+| `npm run db:seed`                 | Re-seed without migrating                             |
+| `npm run db:studio`               | Open Prisma Studio to browse the database             |
 
 ## Defaults chosen
 
@@ -128,7 +161,7 @@ and why — change any of these if they don't match how you actually work:
   Withdrawn/Ghosted are closed-out outcomes with nothing left to act on,
   so they're excluded from the board's columns (still fully visible and
   editable in the table view and on the detail page).
-- **Response rate & funnel use status *history*, not just current
+- **Response rate & funnel use status _history_, not just current
   status.** An application rejected after a technical interview still
   counts as having reached the interview stage — otherwise every rejected
   application would look identical to one rejected on day one. This reads
@@ -137,13 +170,13 @@ and why — change any of these if they don't match how you actually work:
   marked only `team` explicitly optional, but in practice you rarely know
   a req ID or exact team before applying (or at the Wishlist stage before
   you've applied at all).
-- **Application email, no portal passwords.** Applications also track
-  which email address you used to sign up on the company's portal (added
-  mid-build after a request to stop losing track of this across 50-80
-  different accounts). Portal *passwords* are deliberately **not**
-  stored — this is a plaintext, unencrypted local database, and that's a
-  bad place to keep secrets. Use a password manager for those; this app
-  only remembers which inbox to check.
+- **Companies are their own entity, not free text on the application**
+  (added mid-build). The original spec had `company` as a plain string
+  field on Application; it's now a required relation to a `Company`
+  record, so multiple applications to the same company share one record —
+  and one place to keep that company's portal login. See
+  [Companies & portal logins](#companies--portal-logins) for the security
+  trade-off of storing that password in plain text.
 - **`seed.local.json`'s tiers**: the spec said Dream-or-Target for the ten
   wishlist companies but didn't say which is which. This build calls
   SpaceX, Blue Origin, Relativity Space, Rocket Lab, and Anduril "Dream",
@@ -175,6 +208,8 @@ the fully keyboard-reliable ways to change status.
 ## Project structure
 
 ```
+docs/
+  claude-autofill-template.md   The paste-into-Claude prompt, explained
 prisma/
   schema.prisma       Data model (SQLite; no native enums — see comments)
   seed.ts             Seed script (loads seed.local.json or seed.example.json)
