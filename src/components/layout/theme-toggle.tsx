@@ -8,6 +8,10 @@ export function ThemeToggle() {
   const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
+  // Whether client hydration has completed can only be known after the
+  // first commit — there's no render-time value to derive it from, which
+  // is exactly what effects are for (unlike most setState-in-effect cases).
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => setMounted(true), []);
 
   if (!mounted) {

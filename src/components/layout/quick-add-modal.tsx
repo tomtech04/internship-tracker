@@ -29,16 +29,30 @@ export function QuickAddModal({
   const [error, setError] = useState<string | null>(null);
   const [justAdded, setJustAdded] = useState(false);
   const [isPending, startTransition] = useTransition();
+  const [wasOpen, setWasOpen] = useState(open);
   const companyRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
 
-  useEffect(() => {
+  // Reset the form's state during render when `open` flips to true, rather
+  // than in an effect — this avoids an extra render pass, and mirroring the
+  // previous prop is React's documented pattern for this ("Adjusting some
+  // state when a prop changes").
+  if (open !== wasOpen) {
+    setWasOpen(open);
     if (open) {
       setValues(EMPTY);
       setFieldErrors({});
       setError(null);
       setJustAdded(false);
-      setTimeout(() => companyRef.current?.focus(), 50);
+    }
+  }
+
+  // Focusing an element is a real side effect (imperative DOM API), so it
+  // stays in an effect rather than the render-time reset above.
+  useEffect(() => {
+    if (open) {
+      const id = setTimeout(() => companyRef.current?.focus(), 50);
+      return () => clearTimeout(id);
     }
   }, [open]);
 
