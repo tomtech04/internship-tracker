@@ -7,9 +7,7 @@ import { manualEventSchema } from "@/lib/validation";
 
 import type { ActionResult } from "./applications";
 
-export async function addManualEvent(
-  input: unknown,
-): Promise<ActionResult> {
+export async function addManualEvent(input: unknown): Promise<ActionResult> {
   const parsed = manualEventSchema.safeParse(input);
   if (!parsed.success) {
     return {

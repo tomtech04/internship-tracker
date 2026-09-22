@@ -3,7 +3,8 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 
 export async function GET() {
-  const [contacts, applications, events] = await Promise.all([
+  const [companies, contacts, applications, events] = await Promise.all([
+    prisma.company.findMany(),
     prisma.contact.findMany(),
     prisma.application.findMany(),
     prisma.event.findMany(),
@@ -12,6 +13,7 @@ export async function GET() {
   const backup = {
     version: 1 as const,
     exportedAt: new Date().toISOString(),
+    companies,
     contacts,
     applications,
     events,

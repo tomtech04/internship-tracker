@@ -14,9 +14,7 @@ function revalidateContactPaths(id?: string) {
   if (id) revalidatePath(`/contacts/${id}`);
 }
 
-export async function createContact(
-  input: unknown,
-): Promise<ActionResult> {
+export async function createContact(input: unknown): Promise<ActionResult> {
   const parsed = contactSchema.safeParse(input);
   if (!parsed.success) {
     return {

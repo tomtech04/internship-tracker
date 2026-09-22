@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 
+import { findOrCreateCompanyByName } from "@/actions/companies";
 import {
   buildStatusChangeEvent,
   computeAutoFollowUpDate,
@@ -21,9 +22,7 @@ function revalidateApplicationPaths(id?: string) {
   if (id) revalidatePath(`/applications/${id}`);
 }
 
-export async function createApplication(
-  input: unknown,
-): Promise<ActionResult> {
+export async function createApplication(input: unknown): Promise<ActionResult> {
   const parsed = applicationSchema.safeParse(input);
   if (!parsed.success) {
     return {
@@ -63,10 +62,11 @@ export async function quickAddApplication(
   }
   const data = parsed.data;
   const autoFollowUp = computeAutoFollowUpDate(data.status, null);
+  const companyId = await findOrCreateCompanyByName(data.companyName);
 
   const created = await prisma.application.create({
     data: {
-      company: data.company,
+      companyId,
       roleTitle: data.roleTitle,
       jobUrl: data.jobUrl,
       resumeVersion: data.resumeVersion,

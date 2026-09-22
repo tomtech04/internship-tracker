@@ -5,12 +5,12 @@ import { prisma } from "@/lib/db";
 
 export async function GET() {
   const applications = await prisma.application.findMany({
-    include: { referral: true },
-    orderBy: { company: "asc" },
+    include: { company: true, referral: true },
+    orderBy: { company: { name: "asc" } },
   });
 
   const rows: ApplicationCsvRow[] = applications.map((app) => ({
-    company: app.company,
+    companyName: app.company.name,
     roleTitle: app.roleTitle,
     team: app.team,
     location: app.location,
@@ -26,7 +26,6 @@ export async function GET() {
     nextInterviewDate: app.nextInterviewDate,
     itarRestricted: app.itarRestricted,
     compensation: app.compensation,
-    applicationEmail: app.applicationEmail,
     notes: app.notes,
     referralName: app.referral?.name ?? null,
   }));

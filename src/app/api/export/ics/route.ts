@@ -14,6 +14,7 @@ export async function GET() {
         { followUpDate: { gte: today } },
       ],
     },
+    include: { company: true },
   });
 
   const events: IcsEvent[] = applications.flatMap((app) => {
@@ -22,14 +23,14 @@ export async function GET() {
       items.push({
         uid: `interview-${app.id}@internship-tracker`,
         date: app.nextInterviewDate,
-        summary: `Interview: ${app.company} — ${app.roleTitle}`,
+        summary: `Interview: ${app.company.name} — ${app.roleTitle}`,
       });
     }
     if (app.followUpDate && app.followUpDate >= today) {
       items.push({
         uid: `followup-${app.id}@internship-tracker`,
         date: app.followUpDate,
-        summary: `Follow up: ${app.company} — ${app.roleTitle}`,
+        summary: `Follow up: ${app.company.name} — ${app.roleTitle}`,
       });
     }
     return items;
