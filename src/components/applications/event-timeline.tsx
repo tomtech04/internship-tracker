@@ -74,8 +74,11 @@ export function EventTimeline({
 
   return (
     <div className="flex flex-col gap-4">
-      <form onSubmit={handleAdd} className="flex flex-col gap-2 rounded-lg border border-border bg-card p-3">
-        {error && <p className="text-xs text-danger">{error}</p>}
+      <form
+        onSubmit={handleAdd}
+        className="border-border bg-card flex flex-col gap-2 rounded-lg border p-3"
+      >
+        {error && <p className="text-danger text-xs">{error}</p>}
         <div className="flex flex-wrap gap-2">
           <select
             aria-label="Event type"
@@ -115,18 +118,20 @@ export function EventTimeline({
 
       <ol className="flex flex-col gap-3">
         {events.length === 0 && (
-          <p className="text-sm text-muted-foreground">No timeline entries yet.</p>
+          <p className="text-muted-foreground text-sm">
+            No timeline entries yet.
+          </p>
         )}
         {events.map((event) => {
           const Icon = EVENT_ICONS[event.type] ?? MessageSquare;
           return (
             <li key={event.id} className="flex items-start gap-3">
-              <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground">
+              <div className="bg-muted text-muted-foreground mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full">
                 <Icon size={14} />
               </div>
-              <div className="min-w-0 flex-1 rounded-lg border border-border bg-card px-3 py-2">
+              <div className="border-border bg-card min-w-0 flex-1 rounded-lg border px-3 py-2">
                 <div className="flex items-center justify-between gap-2">
-                  <span className="text-xs font-medium text-muted-foreground">
+                  <span className="text-muted-foreground text-xs font-medium">
                     {event.type} · {format(event.date, "MMM d, yyyy")}
                   </span>
                   <button
@@ -139,7 +144,7 @@ export function EventTimeline({
                     <Trash2 size={14} />
                   </button>
                 </div>
-                <p className="mt-0.5 text-sm whitespace-pre-wrap text-foreground">
+                <p className="text-foreground mt-0.5 text-sm whitespace-pre-wrap">
                   {event.description}
                 </p>
               </div>

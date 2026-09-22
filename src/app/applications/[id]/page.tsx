@@ -8,7 +8,11 @@ import { DeleteApplicationButton } from "@/components/applications/delete-applic
 import { EventTimeline } from "@/components/applications/event-timeline";
 import { StatusBadge, TierBadge } from "@/components/common/badges";
 import { MarkdownView } from "@/components/common/markdown-view";
-import { getAllContactsBasic, getApplicationById } from "@/lib/queries";
+import {
+  getAllCompaniesBasic,
+  getAllContactsBasic,
+  getApplicationById,
+} from "@/lib/queries";
 
 export default async function ApplicationDetailPage({
   params,
@@ -16,8 +20,9 @@ export default async function ApplicationDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const [application, contacts] = await Promise.all([
+  const [application, companies, contacts] = await Promise.all([
     getApplicationById(id),
+    getAllCompaniesBasic(),
     getAllContactsBasic(),
   ]);
 
@@ -30,13 +35,18 @@ export default async function ApplicationDetailPage({
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <div className="mb-1 flex flex-wrap items-center gap-2">
-            <h1 className="text-xl font-semibold text-foreground">
-              {application.company}
+            <h1 className="text-foreground text-xl font-semibold">
+              <Link
+                href={`/companies/${application.companyId}`}
+                className="hover:underline"
+              >
+                {application.company.name}
+              </Link>
             </h1>
             <StatusBadge status={application.status} />
             <TierBadge tier={application.tier} />
           </div>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted-foreground text-sm">
             {application.roleTitle}
             {application.team ? ` · ${application.team}` : ""}
             {application.location ? ` · ${application.location}` : ""}
@@ -46,7 +56,7 @@ export default async function ApplicationDetailPage({
               href={application.jobUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="mt-1 inline-flex items-center gap-1 text-sm text-primary hover:underline"
+              className="text-primary mt-1 inline-flex items-center gap-1 text-sm hover:underline"
             >
               View posting <ExternalLink size={12} />
             </a>
@@ -55,7 +65,7 @@ export default async function ApplicationDetailPage({
         <div className="flex items-center gap-2">
           <Link
             href="/board"
-            className="text-sm text-muted-foreground hover:underline"
+            className="text-muted-foreground text-sm hover:underline"
           >
             ← Back to board
           </Link>
@@ -69,11 +79,12 @@ export default async function ApplicationDetailPage({
             mode="edit"
             applicationId={application.id}
             initialValues={applicationToFormValues(application)}
+            companies={companies}
             contacts={contacts}
           />
           {application.notes && (
-            <div className="mt-6 rounded-lg border border-border bg-card p-4">
-              <h3 className="mb-2 text-sm font-semibold text-foreground">
+            <div className="border-border bg-card mt-6 rounded-lg border p-4">
+              <h3 className="text-foreground mb-2 text-sm font-semibold">
                 Notes preview
               </h3>
               <MarkdownView content={application.notes} />
@@ -81,7 +92,7 @@ export default async function ApplicationDetailPage({
           )}
         </div>
         <div>
-          <h3 className="mb-2 text-sm font-semibold text-foreground">
+          <h3 className="text-foreground mb-2 text-sm font-semibold">
             Timeline
           </h3>
           <EventTimeline

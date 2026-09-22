@@ -10,7 +10,7 @@ import { Modal } from "@/components/common/modal";
 import { RESUME_VERSIONS, STATUSES } from "@/lib/constants";
 
 const EMPTY = {
-  company: "",
+  companyName: "",
   roleTitle: "",
   jobUrl: "",
   resumeVersion: "Space" as (typeof RESUME_VERSIONS)[number],
@@ -78,39 +78,60 @@ export function QuickAddModal({
   return (
     <Modal open={open} onClose={onClose} title="Quick add application">
       {justAdded ? (
-        <p className="py-6 text-center text-sm font-medium text-foreground">
+        <p className="text-foreground py-6 text-center text-sm font-medium">
           ✅ Added! Open its detail page later to fill in the rest.
         </p>
       ) : (
         <form onSubmit={handleSubmit} className="flex flex-col gap-3">
-          {error && <p className="text-sm text-danger">{error}</p>}
-          <Field label="Company" htmlFor="qa-company" required error={fieldErrors.company?.[0]}>
+          {error && <p className="text-danger text-sm">{error}</p>}
+          <Field
+            label="Company"
+            htmlFor="qa-company"
+            required
+            error={fieldErrors.companyName?.[0]}
+            hint="Matched or created by name — add portal login details later from Companies."
+          >
             <input
               ref={companyRef}
               id="qa-company"
               className={fieldClass}
-              value={values.company}
-              onChange={(e) => setValues((v) => ({ ...v, company: e.target.value }))}
+              value={values.companyName}
+              onChange={(e) =>
+                setValues((v) => ({ ...v, companyName: e.target.value }))
+              }
               required
             />
           </Field>
-          <Field label="Role title" htmlFor="qa-role" required error={fieldErrors.roleTitle?.[0]}>
+          <Field
+            label="Role title"
+            htmlFor="qa-role"
+            required
+            error={fieldErrors.roleTitle?.[0]}
+          >
             <input
               id="qa-role"
               className={fieldClass}
               value={values.roleTitle}
-              onChange={(e) => setValues((v) => ({ ...v, roleTitle: e.target.value }))}
+              onChange={(e) =>
+                setValues((v) => ({ ...v, roleTitle: e.target.value }))
+              }
               required
             />
           </Field>
-          <Field label="Job URL" htmlFor="qa-url" error={fieldErrors.jobUrl?.[0]}>
+          <Field
+            label="Job URL"
+            htmlFor="qa-url"
+            error={fieldErrors.jobUrl?.[0]}
+          >
             <input
               id="qa-url"
               type="url"
               placeholder="https://..."
               className={fieldClass}
               value={values.jobUrl}
-              onChange={(e) => setValues((v) => ({ ...v, jobUrl: e.target.value }))}
+              onChange={(e) =>
+                setValues((v) => ({ ...v, jobUrl: e.target.value }))
+              }
             />
           </Field>
           <div className="grid grid-cols-2 gap-3">
@@ -139,7 +160,10 @@ export function QuickAddModal({
                 className={fieldClass}
                 value={values.status}
                 onChange={(e) =>
-                  setValues((v) => ({ ...v, status: e.target.value as typeof v.status }))
+                  setValues((v) => ({
+                    ...v,
+                    status: e.target.value as typeof v.status,
+                  }))
                 }
               >
                 {STATUSES.map((s) => (

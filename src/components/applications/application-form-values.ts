@@ -6,7 +6,7 @@
 import { formatDateInput } from "@/lib/dates";
 
 export type ApplicationFormValues = {
-  company: string;
+  companyId: string;
   roleTitle: string;
   team: string;
   location: string;
@@ -23,12 +23,11 @@ export type ApplicationFormValues = {
   referralId: string;
   itarRestricted: boolean;
   compensation: string;
-  applicationEmail: string;
   notes: string;
 };
 
 export const EMPTY_APPLICATION_FORM_VALUES: ApplicationFormValues = {
-  company: "",
+  companyId: "",
   roleTitle: "",
   team: "",
   location: "",
@@ -45,12 +44,11 @@ export const EMPTY_APPLICATION_FORM_VALUES: ApplicationFormValues = {
   referralId: "",
   itarRestricted: false,
   compensation: "",
-  applicationEmail: "",
   notes: "",
 };
 
 export function applicationToFormValues(app: {
-  company: string;
+  companyId: string;
   roleTitle: string;
   team: string | null;
   location: string | null;
@@ -67,11 +65,10 @@ export function applicationToFormValues(app: {
   referralId: string | null;
   itarRestricted: boolean;
   compensation: string | null;
-  applicationEmail: string | null;
   notes: string | null;
 }): ApplicationFormValues {
   return {
-    company: app.company,
+    companyId: app.companyId,
     roleTitle: app.roleTitle,
     team: app.team ?? "",
     location: app.location ?? "",
@@ -88,7 +85,6 @@ export function applicationToFormValues(app: {
     referralId: app.referralId ?? "",
     itarRestricted: app.itarRestricted,
     compensation: app.compensation ?? "",
-    applicationEmail: app.applicationEmail ?? "",
     notes: app.notes ?? "",
   };
 }
