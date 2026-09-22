@@ -7,7 +7,10 @@ import { EmptyState } from "@/components/common/empty-state";
 type Row = { id: string; company: string; roleTitle: string };
 
 function dueLabel(date: Date) {
-  const days = differenceInCalendarDays(startOfDay(new Date()), startOfDay(date));
+  const days = differenceInCalendarDays(
+    startOfDay(new Date()),
+    startOfDay(date),
+  );
   if (days === 0) return "Due today";
   if (days > 0) return `Overdue by ${days} day${days === 1 ? "" : "s"}`;
   return `In ${-days} day${days === -1 ? "" : "s"}`;
@@ -26,25 +29,29 @@ function Section({
 }) {
   return (
     <div>
-      <h4 className="mb-2 flex items-center gap-1.5 text-xs font-semibold tracking-wide text-muted-foreground uppercase">
+      <h4 className="text-muted-foreground mb-2 flex items-center gap-1.5 text-xs font-semibold tracking-wide uppercase">
         <Icon size={14} />
         {title} ({rows.length})
       </h4>
       {rows.length === 0 ? (
-        <p className="text-sm text-muted-foreground">Nothing here. 🎉</p>
+        <p className="text-muted-foreground text-sm">Nothing here. 🎉</p>
       ) : (
         <ul className="flex flex-col gap-1.5">
           {rows.map((row) => (
             <li key={row.id}>
               <Link
                 href={`/applications/${row.id}`}
-                className="flex items-center justify-between gap-2 rounded-md px-2 py-1.5 text-sm hover:bg-muted"
+                className="hover:bg-muted flex items-center justify-between gap-2 rounded-md px-2 py-1.5 text-sm"
               >
                 <span className="truncate">
-                  <span className="font-medium text-foreground">{row.company}</span>{" "}
-                  <span className="text-muted-foreground">— {row.roleTitle}</span>
+                  <span className="text-foreground font-medium">
+                    {row.company}
+                  </span>{" "}
+                  <span className="text-muted-foreground">
+                    — {row.roleTitle}
+                  </span>
                 </span>
-                <span className="shrink-0 text-xs whitespace-nowrap text-muted-foreground">
+                <span className="text-muted-foreground shrink-0 text-xs whitespace-nowrap">
                   {getDate(row.date)}
                 </span>
               </Link>
@@ -69,8 +76,8 @@ export function ActionNeededPanel({
     followUpsDue.length + interviewsUpcoming.length + deadlinesUpcoming.length;
 
   return (
-    <div className="rounded-lg border border-border bg-card p-4">
-      <h3 className="mb-3 text-sm font-semibold text-foreground">
+    <div className="border-border bg-card rounded-lg border p-4">
+      <h3 className="text-foreground mb-3 text-sm font-semibold">
         Action needed
       </h3>
       {total === 0 ? (
@@ -90,7 +97,10 @@ export function ActionNeededPanel({
           <Section
             title="Interviews next 7 days"
             icon={CalendarClock}
-            rows={interviewsUpcoming.map((r) => ({ ...r, date: r.nextInterviewDate! }))}
+            rows={interviewsUpcoming.map((r) => ({
+              ...r,
+              date: r.nextInterviewDate!,
+            }))}
             getDate={(d) => format(d, "EEE, MMM d")}
           />
           <Section

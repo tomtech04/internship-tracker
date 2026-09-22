@@ -29,11 +29,11 @@ export function StalePanel({ applications }: { applications: StaleApp[] }) {
   }
 
   return (
-    <div className="rounded-lg border border-border bg-card p-4">
-      <h3 className="mb-1 text-sm font-semibold text-foreground">
+    <div className="border-border bg-card rounded-lg border p-4">
+      <h3 className="text-foreground mb-1 text-sm font-semibold">
         Stale applications
       </h3>
-      <p className="mb-3 text-xs text-muted-foreground">
+      <p className="text-muted-foreground mb-3 text-xs">
         Sitting in &ldquo;Applied&rdquo; with no update for 21+ days.
       </p>
       {applications.length === 0 ? (
@@ -47,13 +47,15 @@ export function StalePanel({ applications }: { applications: StaleApp[] }) {
           {applications.map((app) => (
             <li
               key={app.id}
-              className="flex items-center justify-between gap-2 rounded-md px-2 py-1.5 text-sm hover:bg-muted"
+              className="hover:bg-muted flex items-center justify-between gap-2 rounded-md px-2 py-1.5 text-sm"
             >
               <Link
                 href={`/applications/${app.id}`}
                 className="min-w-0 flex-1 truncate"
               >
-                <span className="font-medium text-foreground">{app.company}</span>{" "}
+                <span className="text-foreground font-medium">
+                  {app.company}
+                </span>{" "}
                 <span className="text-muted-foreground">
                   — {app.roleTitle} ·{" "}
                   {differenceInCalendarDays(new Date(), app.updatedAt)}d silent

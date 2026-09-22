@@ -87,16 +87,21 @@ export function ContactForm({
   return (
     <form onSubmit={handleSubmit} className="flex flex-col gap-6">
       {error && (
-        <p className="rounded-md bg-danger/10 px-3 py-2 text-sm text-danger">
+        <p className="bg-danger/10 text-danger rounded-md px-3 py-2 text-sm">
           {error}
         </p>
       )}
 
       <fieldset className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <legend className="col-span-full mb-1 text-sm font-semibold text-foreground">
+        <legend className="text-foreground col-span-full mb-1 text-sm font-semibold">
           Basics
         </legend>
-        <Field label="Name" htmlFor="name" required error={fieldErrors.name?.[0]}>
+        <Field
+          label="Name"
+          htmlFor="name"
+          required
+          error={fieldErrors.name?.[0]}
+        >
           <input
             id="name"
             className={fieldClass}
@@ -155,7 +160,7 @@ export function ContactForm({
       </fieldset>
 
       <fieldset className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-        <legend className="col-span-full mb-1 text-sm font-semibold text-foreground">
+        <legend className="text-foreground col-span-full mb-1 text-sm font-semibold">
           Contact info
         </legend>
         <Field label="Email" htmlFor="email" error={fieldErrors.email?.[0]}>
@@ -167,7 +172,11 @@ export function ContactForm({
             onChange={(e) => set("email", e.target.value)}
           />
         </Field>
-        <Field label="LinkedIn URL" htmlFor="linkedinUrl" error={fieldErrors.linkedinUrl?.[0]}>
+        <Field
+          label="LinkedIn URL"
+          htmlFor="linkedinUrl"
+          error={fieldErrors.linkedinUrl?.[0]}
+        >
           <input
             id="linkedinUrl"
             type="url"
@@ -177,7 +186,11 @@ export function ContactForm({
             onChange={(e) => set("linkedinUrl", e.target.value)}
           />
         </Field>
-        <Field label="Next step" htmlFor="nextStep" hint="e.g. 'Ask for a referral', 'Send thank-you note'">
+        <Field
+          label="Next step"
+          htmlFor="nextStep"
+          hint="e.g. 'Ask for a referral', 'Send thank-you note'"
+        >
           <input
             id="nextStep"
             className={fieldClass}
@@ -188,7 +201,7 @@ export function ContactForm({
       </fieldset>
 
       <fieldset className="flex flex-col gap-2">
-        <legend className="mb-1 text-sm font-semibold text-foreground">
+        <legend className="text-foreground mb-1 text-sm font-semibold">
           Notes
         </legend>
         <Field label="Notes" htmlFor="notes">
@@ -203,23 +216,23 @@ export function ContactForm({
       </fieldset>
 
       <fieldset className="flex flex-col gap-2">
-        <legend className="mb-1 text-sm font-semibold text-foreground">
+        <legend className="text-foreground mb-1 text-sm font-semibold">
           Linked applications
         </legend>
         {applications.length === 0 ? (
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted-foreground text-sm">
             No applications to link yet.
           </p>
         ) : (
-          <div className="flex max-h-48 flex-col gap-1 overflow-y-auto rounded-md border border-border p-2">
+          <div className="border-border flex max-h-48 flex-col gap-1 overflow-y-auto rounded-md border p-2">
             {applications.map((app) => (
               <label
                 key={app.id}
-                className="flex items-center gap-2 rounded px-1.5 py-1 text-sm hover:bg-muted"
+                className="hover:bg-muted flex items-center gap-2 rounded px-1.5 py-1 text-sm"
               >
                 <input
                   type="checkbox"
-                  className="h-4 w-4 rounded border-input"
+                  className="border-input h-4 w-4 rounded"
                   checked={values.applicationIds.includes(app.id)}
                   onChange={() => toggleApplication(app.id)}
                 />
@@ -233,7 +246,11 @@ export function ContactForm({
 
       <div className="flex items-center gap-3">
         <Button type="submit" disabled={isPending}>
-          {isPending ? "Saving…" : mode === "create" ? "Create contact" : "Save changes"}
+          {isPending
+            ? "Saving…"
+            : mode === "create"
+              ? "Create contact"
+              : "Save changes"}
         </Button>
         {saved && (
           <span className="text-sm text-green-600 dark:text-green-400">

@@ -12,7 +12,7 @@ export default function NotFound() {
       action={
         <Link
           href="/"
-          className="rounded-md bg-primary px-3.5 py-2 text-sm font-medium text-primary-foreground hover:opacity-90"
+          className="bg-primary text-primary-foreground rounded-md px-3.5 py-2 text-sm font-medium hover:opacity-90"
         >
           Back to dashboard
         </Link>

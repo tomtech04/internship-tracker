@@ -10,10 +10,10 @@ export default async function ContactsPage() {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold text-foreground">Contacts</h1>
+        <h1 className="text-foreground text-xl font-semibold">Contacts</h1>
         <Link
           href="/contacts/new"
-          className="flex items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground hover:opacity-90"
+          className="bg-primary text-primary-foreground flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium hover:opacity-90"
         >
           <Plus size={16} />
           New contact
@@ -28,7 +28,7 @@ export default async function ContactsPage() {
           action={
             <Link
               href="/contacts/new"
-              className="rounded-md bg-primary px-3.5 py-2 text-sm font-medium text-primary-foreground hover:opacity-90"
+              className="bg-primary text-primary-foreground rounded-md px-3.5 py-2 text-sm font-medium hover:opacity-90"
             >
               New contact
             </Link>
@@ -40,22 +40,22 @@ export default async function ContactsPage() {
             <Link
               key={contact.id}
               href={`/contacts/${contact.id}`}
-              className="flex flex-col gap-1 rounded-lg border border-border bg-card p-4 hover:border-primary"
+              className="border-border bg-card hover:border-primary flex flex-col gap-1 rounded-lg border p-4"
             >
               <div className="flex items-center justify-between">
-                <span className="font-medium text-foreground">
+                <span className="text-foreground font-medium">
                   {contact.name}
                 </span>
-                <span className="rounded-full bg-muted px-2 py-0.5 text-xs text-muted-foreground">
+                <span className="bg-muted text-muted-foreground rounded-full px-2 py-0.5 text-xs">
                   {contact.relationship}
                 </span>
               </div>
               {(contact.role || contact.company) && (
-                <p className="text-sm text-muted-foreground">
+                <p className="text-muted-foreground text-sm">
                   {[contact.role, contact.company].filter(Boolean).join(" @ ")}
                 </p>
               )}
-              <p className="mt-1 text-xs text-muted-foreground">
+              <p className="text-muted-foreground mt-1 text-xs">
                 {contact.applications.length} linked application
                 {contact.applications.length === 1 ? "" : "s"}
               </p>

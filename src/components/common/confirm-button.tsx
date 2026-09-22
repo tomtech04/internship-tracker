@@ -24,7 +24,7 @@ export function ConfirmButton({
   if (confirming) {
     return (
       <span className="inline-flex items-center gap-1.5">
-        <span className="text-xs text-muted-foreground">{confirmLabel}</span>
+        <span className="text-muted-foreground text-xs">{confirmLabel}</span>
         <Button
           type="button"
           variant="danger"

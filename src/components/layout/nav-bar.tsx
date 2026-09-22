@@ -4,6 +4,7 @@ import {
   LayoutDashboard,
   KanbanSquare,
   Table2,
+  Building2,
   Users,
   DatabaseBackup,
   Menu,
@@ -22,6 +23,7 @@ const NAV_ITEMS = [
   { href: "/", label: "Dashboard", icon: LayoutDashboard },
   { href: "/board", label: "Board", icon: KanbanSquare },
   { href: "/table", label: "Table", icon: Table2 },
+  { href: "/companies", label: "Companies", icon: Building2 },
   { href: "/contacts", label: "Contacts", icon: Users },
   { href: "/data", label: "Data", icon: DatabaseBackup },
 ];
@@ -31,7 +33,7 @@ export function NavBar({ onQuickAdd }: { onQuickAdd: () => void }) {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-card/95 backdrop-blur">
+    <header className="border-border bg-card/95 sticky top-0 z-40 border-b backdrop-blur">
       <div className="mx-auto flex h-14 max-w-7xl items-center justify-between px-4">
         <div className="flex items-center gap-6">
           <Link href="/" className="font-semibold tracking-tight">
@@ -66,7 +68,7 @@ export function NavBar({ onQuickAdd }: { onQuickAdd: () => void }) {
           <button
             type="button"
             onClick={onQuickAdd}
-            className="hidden items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90 sm:flex"
+            className="bg-primary text-primary-foreground hidden items-center gap-1.5 rounded-md px-3 py-1.5 text-sm font-medium transition-opacity hover:opacity-90 sm:flex"
           >
             <Plus size={16} />
             Quick add
@@ -77,7 +79,7 @@ export function NavBar({ onQuickAdd }: { onQuickAdd: () => void }) {
           <ThemeToggle />
           <button
             type="button"
-            className="flex h-9 w-9 items-center justify-center rounded-md border border-border md:hidden"
+            className="border-border flex h-9 w-9 items-center justify-center rounded-md border md:hidden"
             aria-label={open ? "Close menu" : "Open menu"}
             aria-expanded={open}
             onClick={() => setOpen((v) => !v)}
@@ -88,7 +90,7 @@ export function NavBar({ onQuickAdd }: { onQuickAdd: () => void }) {
       </div>
 
       {open && (
-        <nav className="border-t border-border px-4 py-2 md:hidden">
+        <nav className="border-border border-t px-4 py-2 md:hidden">
           {NAV_ITEMS.map((item) => {
             const active =
               item.href === "/"
@@ -117,7 +119,7 @@ export function NavBar({ onQuickAdd }: { onQuickAdd: () => void }) {
               setOpen(false);
               onQuickAdd();
             }}
-            className="mt-1 flex w-full items-center gap-2 rounded-md bg-primary px-3 py-2 text-left text-sm font-medium text-primary-foreground"
+            className="bg-primary text-primary-foreground mt-1 flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-sm font-medium"
           >
             <Plus size={16} />
             Quick add

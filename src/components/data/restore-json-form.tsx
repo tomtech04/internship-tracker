@@ -77,22 +77,25 @@ export function RestoreJsonForm() {
         aria-label="Choose backup JSON file"
         className={fieldClass}
       />
-      {error && <p className="text-sm text-danger">{error}</p>}
+      {error && <p className="text-danger text-sm">{error}</p>}
       {result && (
         <p className="text-sm text-green-600 dark:text-green-400">{result}</p>
       )}
 
       {parsed && (
-        <div className="rounded-md border border-danger/40 bg-danger/5 p-3">
-          <p className="text-sm font-medium text-foreground">
+        <div className="border-danger/40 bg-danger/5 rounded-md border p-3">
+          <p className="text-foreground text-sm font-medium">
             This backup contains {parsed.applications} applications,{" "}
             {parsed.contacts} contacts, and {parsed.events} timeline events.
           </p>
-          <p className="mt-1 text-sm text-danger">
+          <p className="text-danger mt-1 text-sm">
             Restoring will permanently delete ALL current data and replace it
             with this backup. This can&apos;t be undone.
           </p>
-          <label htmlFor="confirm-restore" className="mt-3 block text-sm font-medium text-foreground">
+          <label
+            htmlFor="confirm-restore"
+            className="text-foreground mt-3 block text-sm font-medium"
+          >
             Type {CONFIRM_PHRASE} to confirm
           </label>
           <input

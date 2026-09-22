@@ -38,9 +38,9 @@ export function Modal({
         if (e.target === ref.current) onClose();
       }}
       aria-labelledby="modal-title"
-      className={`w-full max-w-lg rounded-lg border border-border bg-card p-0 text-card-foreground backdrop:bg-black/50 ${className ?? ""}`}
+      className={`border-border bg-card text-card-foreground w-full max-w-lg rounded-lg border p-0 backdrop:bg-black/50 ${className ?? ""}`}
     >
-      <div className="flex items-center justify-between border-b border-border px-5 py-3">
+      <div className="border-border flex items-center justify-between border-b px-5 py-3">
         <h2 id="modal-title" className="text-base font-semibold">
           {title}
         </h2>
@@ -48,7 +48,7 @@ export function Modal({
           type="button"
           onClick={onClose}
           aria-label="Close dialog"
-          className="rounded-md p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
+          className="text-muted-foreground hover:bg-muted hover:text-foreground rounded-md p-1"
         >
           <X size={18} />
         </button>

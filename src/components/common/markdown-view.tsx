@@ -2,7 +2,7 @@ import ReactMarkdown from "react-markdown";
 
 export function MarkdownView({ content }: { content: string }) {
   return (
-    <div className="prose-notes text-sm text-foreground">
+    <div className="prose-notes text-foreground text-sm">
       <ReactMarkdown>{content}</ReactMarkdown>
     </div>
   );

@@ -16,13 +16,16 @@ export function WeeklyChartCard({
   data: { week: string; count: number }[];
 }) {
   return (
-    <div className="rounded-lg border border-border bg-card p-4">
-      <h3 className="mb-2 text-sm font-semibold text-foreground">
+    <div className="border-border bg-card rounded-lg border p-4">
+      <h3 className="text-foreground mb-2 text-sm font-semibold">
         Applications submitted per week
       </h3>
       <div className="h-64 w-full">
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={data} margin={{ top: 8, right: 8, left: -20, bottom: 0 }}>
+          <BarChart
+            data={data}
+            margin={{ top: 8, right: 8, left: -20, bottom: 0 }}
+          >
             <CartesianGrid strokeDasharray="3 3" stroke="var(--color-border)" />
             <XAxis
               dataKey="week"
@@ -46,7 +49,11 @@ export function WeeklyChartCard({
                 color: "var(--color-card-foreground)",
               }}
             />
-            <Bar dataKey="count" fill="var(--color-primary)" radius={[4, 4, 0, 0]} />
+            <Bar
+              dataKey="count"
+              fill="var(--color-primary)"
+              radius={[4, 4, 0, 0]}
+            />
           </BarChart>
         </ResponsiveContainer>
       </div>

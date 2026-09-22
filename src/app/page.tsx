@@ -31,7 +31,7 @@ export default async function DashboardPage() {
         action={
           <Link
             href="/applications/new"
-            className="rounded-md bg-primary px-3.5 py-2 text-sm font-medium text-primary-foreground hover:opacity-90"
+            className="bg-primary text-primary-foreground rounded-md px-3.5 py-2 text-sm font-medium hover:opacity-90"
           >
             New application
           </Link>
@@ -42,6 +42,7 @@ export default async function DashboardPage() {
 
   const typedApplications = applications.map((a) => ({
     ...a,
+    company: a.company.name,
     status: a.status as Status,
   }));
 
@@ -54,7 +55,7 @@ export default async function DashboardPage() {
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-xl font-semibold text-foreground">Dashboard</h1>
+      <h1 className="text-foreground text-xl font-semibold">Dashboard</h1>
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
         <div className="lg:col-span-2">

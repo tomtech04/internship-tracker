@@ -7,18 +7,18 @@ export function StatusCountsGrid({
   counts: { status: Status; count: number }[];
 }) {
   return (
-    <div className="rounded-lg border border-border bg-card p-4">
-      <h3 className="mb-3 text-sm font-semibold text-foreground">
+    <div className="border-border bg-card rounded-lg border p-4">
+      <h3 className="text-foreground mb-3 text-sm font-semibold">
         Applications by status
       </h3>
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
         {counts.map(({ status, count }) => (
           <div
             key={status}
-            className="flex items-center justify-between gap-2 rounded-md border border-border px-2.5 py-2"
+            className="border-border flex items-center justify-between gap-2 rounded-md border px-2.5 py-2"
           >
             <StatusBadge status={status} />
-            <span className="text-sm font-semibold tabular-nums text-foreground">
+            <span className="text-foreground text-sm font-semibold tabular-nums">
               {count}
             </span>
           </div>

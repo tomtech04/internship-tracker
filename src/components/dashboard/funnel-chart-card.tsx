@@ -27,11 +27,11 @@ export function FunnelChartCard({
   }));
 
   return (
-    <div className="rounded-lg border border-border bg-card p-4">
-      <h3 className="mb-2 text-sm font-semibold text-foreground">
+    <div className="border-border bg-card rounded-lg border p-4">
+      <h3 className="text-foreground mb-2 text-sm font-semibold">
         Pipeline funnel
       </h3>
-      <p className="mb-3 text-xs text-muted-foreground">
+      <p className="text-muted-foreground mb-3 text-xs">
         Applications that ever reached each stage, including ones later
         rejected.
       </p>

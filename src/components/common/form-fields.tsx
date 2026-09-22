@@ -20,16 +20,16 @@ export function Field({
 }) {
   return (
     <div className="flex flex-col gap-1">
-      <label htmlFor={htmlFor} className="text-sm font-medium text-foreground">
+      <label htmlFor={htmlFor} className="text-foreground text-sm font-medium">
         {label}
         {required && <span className="text-danger"> *</span>}
       </label>
       {children}
       {hint && !error && (
-        <p className="text-xs text-muted-foreground">{hint}</p>
+        <p className="text-muted-foreground text-xs">{hint}</p>
       )}
       {error && (
-        <p className="text-xs text-danger" role="alert">
+        <p className="text-danger text-xs" role="alert">
           {error}
         </p>
       )}

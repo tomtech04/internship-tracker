@@ -15,8 +15,8 @@ export default async function BoardPage() {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold text-foreground">Board</h1>
-        <p className="text-xs text-muted-foreground">
+        <h1 className="text-foreground text-xl font-semibold">Board</h1>
+        <p className="text-muted-foreground text-xs">
           Closed-out applications (Accepted, Rejected, Withdrawn, Ghosted) live
           in the{" "}
           <Link href="/table" className="underline underline-offset-2">
@@ -36,7 +36,7 @@ export default async function BoardPage() {
         <KanbanBoard
           applications={boardApps.map((a) => ({
             id: a.id,
-            company: a.company,
+            company: a.company.name,
             roleTitle: a.roleTitle,
             tier: a.tier,
             status: a.status as (typeof BOARD_STATUSES)[number],

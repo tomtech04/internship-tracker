@@ -19,7 +19,10 @@ const TARGET_FIELDS = APPLICATION_CSV_FIELDS.filter(
     f !== "referralName",
 );
 
-const REQUIRED_FIELDS = new Set<ApplicationCsvField>(["company", "roleTitle"]);
+const REQUIRED_FIELDS = new Set<ApplicationCsvField>([
+  "companyName",
+  "roleTitle",
+]);
 
 function guessMapping(headers: string[]): ApplicationImportMapping {
   const mapping = identityMapping(headers);
@@ -62,7 +65,8 @@ export function ImportCsvWizard() {
   }
 
   const mappedPreview = useMemo(
-    () => rows.slice(0, 5).map((row) => mapCsvRowToApplicationInput(row, mapping)),
+    () =>
+      rows.slice(0, 5).map((row) => mapCsvRowToApplicationInput(row, mapping)),
     [rows, mapping],
   );
 
@@ -74,7 +78,9 @@ export function ImportCsvWizard() {
     setError(null);
     setResult(null);
     startTransition(async () => {
-      const coerced = rows.map((row) => mapCsvRowToApplicationInput(row, mapping));
+      const coerced = rows.map((row) =>
+        mapCsvRowToApplicationInput(row, mapping),
+      );
       const res = await importApplicationsCSV(coerced);
       if (!res.success) {
         setError(res.error);
@@ -98,14 +104,15 @@ export function ImportCsvWizard() {
         aria-label="Choose CSV file"
         className={fieldClass}
       />
-      {error && <p className="text-sm text-danger">{error}</p>}
+      {error && <p className="text-danger text-sm">{error}</p>}
       {result && (
-        <div className="rounded-md border border-border bg-muted/50 p-3 text-sm">
-          <p className="font-medium text-foreground">
-            Imported {result.created} application{result.created === 1 ? "" : "s"}.
+        <div className="border-border bg-muted/50 rounded-md border p-3 text-sm">
+          <p className="text-foreground font-medium">
+            Imported {result.created} application
+            {result.created === 1 ? "" : "s"}.
           </p>
           {result.errors.length > 0 && (
-            <ul className="mt-1 list-disc pl-5 text-danger">
+            <ul className="text-danger mt-1 list-disc pl-5">
               {result.errors.map((e, i) => (
                 <li key={i}>{e}</li>
               ))}
@@ -117,13 +124,14 @@ export function ImportCsvWizard() {
       {headers.length > 0 && (
         <>
           <div>
-            <h4 className="mb-2 text-sm font-semibold text-foreground">
-              Map columns ({rows.length} row{rows.length === 1 ? "" : "s"} found)
+            <h4 className="text-foreground mb-2 text-sm font-semibold">
+              Map columns ({rows.length} row{rows.length === 1 ? "" : "s"}{" "}
+              found)
             </h4>
             <div className="grid grid-cols-1 gap-2 sm:grid-cols-2 lg:grid-cols-3">
               {TARGET_FIELDS.map((field) => (
                 <label key={field} className="flex flex-col gap-1 text-xs">
-                  <span className="font-medium text-foreground">
+                  <span className="text-foreground font-medium">
                     {field}
                     {REQUIRED_FIELDS.has(field) && (
                       <span className="text-danger"> *</span>
@@ -152,13 +160,13 @@ export function ImportCsvWizard() {
           </div>
 
           <div>
-            <h4 className="mb-2 text-sm font-semibold text-foreground">
+            <h4 className="text-foreground mb-2 text-sm font-semibold">
               Preview (first {mappedPreview.length})
             </h4>
-            <div className="overflow-x-auto rounded-md border border-border">
+            <div className="border-border overflow-x-auto rounded-md border">
               <table className="w-full min-w-[600px] text-xs">
                 <thead>
-                  <tr className="border-b border-border bg-muted/50 text-left">
+                  <tr className="border-border bg-muted/50 border-b text-left">
                     <th className="px-2 py-1.5">Company</th>
                     <th className="px-2 py-1.5">Role</th>
                     <th className="px-2 py-1.5">Status</th>
@@ -168,8 +176,11 @@ export function ImportCsvWizard() {
                 </thead>
                 <tbody>
                   {mappedPreview.map((row, i) => (
-                    <tr key={i} className="border-b border-border last:border-0">
-                      <td className="px-2 py-1.5">{row.company || "—"}</td>
+                    <tr
+                      key={i}
+                      className="border-border border-b last:border-0"
+                    >
+                      <td className="px-2 py-1.5">{row.companyName || "—"}</td>
                       <td className="px-2 py-1.5">{row.roleTitle || "—"}</td>
                       <td className="px-2 py-1.5">{row.status}</td>
                       <td className="px-2 py-1.5">{row.tier}</td>
@@ -182,7 +193,7 @@ export function ImportCsvWizard() {
           </div>
 
           {missingRequired.length > 0 && (
-            <p className="text-sm text-danger">
+            <p className="text-danger text-sm">
               Map required fields first: {missingRequired.join(", ")}
             </p>
           )}

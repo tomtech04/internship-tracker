@@ -10,7 +10,7 @@ export default async function TablePage() {
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-xl font-semibold text-foreground">
+      <h1 className="text-foreground text-xl font-semibold">
         All applications
       </h1>
       {applications.length === 0 ? (
@@ -23,7 +23,8 @@ export default async function TablePage() {
         <ApplicationsTable
           applications={applications.map((a) => ({
             id: a.id,
-            company: a.company,
+            companyId: a.companyId,
+            company: a.company.name,
             roleTitle: a.roleTitle,
             team: a.team,
             location: a.location,
@@ -36,7 +37,6 @@ export default async function TablePage() {
             deadline: a.deadline,
             followUpDate: a.followUpDate,
             nextInterviewDate: a.nextInterviewDate,
-            applicationEmail: a.applicationEmail,
             referralName: a.referral?.name ?? null,
           }))}
         />

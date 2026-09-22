@@ -20,6 +20,7 @@ import { formatDateInput } from "@/lib/dates";
 
 export type TableApplication = {
   id: string;
+  companyId: string;
   company: string;
   roleTitle: string;
   team: string | null;
@@ -33,7 +34,6 @@ export type TableApplication = {
   deadline: Date | null;
   followUpDate: Date | null;
   nextInterviewDate: Date | null;
-  applicationEmail: string | null;
   referralName: string | null;
 };
 
@@ -95,14 +95,7 @@ export function ApplicationsTable({
       .filter((a) => (sourceFilter ? a.source === sourceFilter : true))
       .filter((a) => {
         if (!q) return true;
-        return [
-          a.company,
-          a.roleTitle,
-          a.team,
-          a.location,
-          a.notes,
-          a.applicationEmail,
-        ]
+        return [a.company, a.roleTitle, a.team, a.location, a.notes]
           .filter(Boolean)
           .some((field) => field!.toLowerCase().includes(q));
       })
@@ -110,7 +103,16 @@ export function ApplicationsTable({
         const cmp = compareValues(a, b, sortKey);
         return sortDir === "asc" ? cmp : -cmp;
       });
-  }, [applications, search, statusFilter, tierFilter, resumeFilter, sourceFilter, sortKey, sortDir]);
+  }, [
+    applications,
+    search,
+    statusFilter,
+    tierFilter,
+    resumeFilter,
+    sourceFilter,
+    sortKey,
+    sortDir,
+  ]);
 
   function toggleSort(key: SortKey) {
     if (key === sortKey) {
@@ -136,7 +138,7 @@ export function ApplicationsTable({
         <div className="relative">
           <Search
             size={14}
-            className="pointer-events-none absolute top-1/2 left-2.5 -translate-y-1/2 text-muted-foreground"
+            className="text-muted-foreground pointer-events-none absolute top-1/2 left-2.5 -translate-y-1/2"
           />
           <input
             type="search"
@@ -199,7 +201,7 @@ export function ApplicationsTable({
             </option>
           ))}
         </select>
-        <span className="text-xs text-muted-foreground">
+        <span className="text-muted-foreground text-xs">
           {filtered.length} of {applications.length}
         </span>
       </div>
@@ -211,16 +213,20 @@ export function ApplicationsTable({
           description="Try clearing a filter or search term."
         />
       ) : (
-        <div className="overflow-x-auto rounded-lg border border-border">
+        <div className="border-border overflow-x-auto rounded-lg border">
           <table className="w-full min-w-[900px] border-collapse text-sm">
             <thead>
-              <tr className="border-b border-border bg-muted/50 text-left">
+              <tr className="border-border bg-muted/50 border-b text-left">
                 {COLUMNS.map((col) => (
-                  <th key={col.key} scope="col" className="px-3 py-2 font-medium">
+                  <th
+                    key={col.key}
+                    scope="col"
+                    className="px-3 py-2 font-medium"
+                  >
                     <button
                       type="button"
                       onClick={() => toggleSort(col.key)}
-                      className="flex items-center gap-1 text-foreground hover:text-primary"
+                      className="text-foreground hover:text-primary flex items-center gap-1"
                     >
                       {col.label}
                       {sortKey === col.key ? (
@@ -236,9 +242,6 @@ export function ApplicationsTable({
                   </th>
                 ))}
                 <th scope="col" className="px-3 py-2 font-medium">
-                  Applied with
-                </th>
-                <th scope="col" className="px-3 py-2 font-medium">
                   Referral
                 </th>
               </tr>
@@ -247,7 +250,7 @@ export function ApplicationsTable({
               {filtered.map((app) => (
                 <tr
                   key={app.id}
-                  className="border-b border-border last:border-0 hover:bg-muted/40"
+                  className="border-border hover:bg-muted/40 border-b last:border-0"
                 >
                   <td className="px-3 py-2 font-medium whitespace-nowrap">
                     <Link
@@ -255,9 +258,16 @@ export function ApplicationsTable({
                       className="hover:underline"
                     >
                       {app.company}
+                    </Link>{" "}
+                    <Link
+                      href={`/companies/${app.companyId}`}
+                      className="text-muted-foreground hover:text-primary text-xs font-normal"
+                      title="Manage this company"
+                    >
+                      ↗
                     </Link>
                   </td>
-                  <td className="px-3 py-2 whitespace-nowrap text-muted-foreground">
+                  <td className="text-muted-foreground px-3 py-2 whitespace-nowrap">
                     {app.roleTitle}
                   </td>
                   <td className="px-3 py-2">
@@ -268,7 +278,7 @@ export function ApplicationsTable({
                       onChange={(e) =>
                         handleStatusChange(app.id, e.target.value as Status)
                       }
-                      className="rounded-md border border-input bg-background px-1.5 py-1 text-xs focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                      className="border-input bg-background focus-visible:ring-ring rounded-md border px-1.5 py-1 text-xs focus-visible:ring-2 focus-visible:outline-none"
                     >
                       {STATUSES.map((s) => (
                         <option key={s} value={s}>
@@ -280,22 +290,19 @@ export function ApplicationsTable({
                   <td className="px-3 py-2">
                     <TierBadge tier={app.tier} />
                   </td>
-                  <td className="px-3 py-2 whitespace-nowrap text-muted-foreground">
+                  <td className="text-muted-foreground px-3 py-2 whitespace-nowrap">
                     {formatDateInput(app.dateApplied) || "—"}
                   </td>
-                  <td className="px-3 py-2 whitespace-nowrap text-muted-foreground">
+                  <td className="text-muted-foreground px-3 py-2 whitespace-nowrap">
                     {formatDateInput(app.deadline) || "—"}
                   </td>
-                  <td className="px-3 py-2 whitespace-nowrap text-muted-foreground">
+                  <td className="text-muted-foreground px-3 py-2 whitespace-nowrap">
                     {formatDateInput(app.followUpDate) || "—"}
                   </td>
-                  <td className="px-3 py-2 whitespace-nowrap text-muted-foreground">
+                  <td className="text-muted-foreground px-3 py-2 whitespace-nowrap">
                     {formatDateInput(app.nextInterviewDate) || "—"}
                   </td>
-                  <td className="px-3 py-2 whitespace-nowrap text-muted-foreground">
-                    {app.applicationEmail ?? "—"}
-                  </td>
-                  <td className="px-3 py-2 whitespace-nowrap text-muted-foreground">
+                  <td className="text-muted-foreground px-3 py-2 whitespace-nowrap">
                     {app.referralName ?? "—"}
                   </td>
                 </tr>

@@ -35,7 +35,7 @@ export function ApplicationCard({
     <div
       ref={setNodeRef}
       style={style}
-      className={`flex items-start gap-1 rounded-md border border-border bg-background p-2.5 shadow-sm ${
+      className={`border-border bg-background flex items-start gap-1 rounded-md border p-2.5 shadow-sm ${
         isDragging || dragging ? "opacity-60 shadow-md" : ""
       }`}
     >
@@ -44,18 +44,18 @@ export function ApplicationCard({
         {...listeners}
         {...attributes}
         aria-label={`Reorder ${application.company} card`}
-        className="mt-0.5 cursor-grab touch-none rounded p-0.5 text-muted-foreground hover:bg-muted active:cursor-grabbing"
+        className="text-muted-foreground hover:bg-muted mt-0.5 cursor-grab touch-none rounded p-0.5 active:cursor-grabbing"
       >
         <GripVertical size={14} />
       </button>
       <Link
         href={`/applications/${application.id}`}
-        className="min-w-0 flex-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"
+        className="focus-visible:ring-ring min-w-0 flex-1 rounded focus-visible:ring-2 focus-visible:outline-none"
       >
-        <p className="truncate text-sm font-medium text-foreground">
+        <p className="text-foreground truncate text-sm font-medium">
           {application.company}
         </p>
-        <p className="truncate text-xs text-muted-foreground">
+        <p className="text-muted-foreground truncate text-xs">
           {application.roleTitle}
         </p>
         <div className="mt-1.5 flex items-center justify-between gap-1">
@@ -65,7 +65,7 @@ export function ApplicationCard({
               Interview {format(application.nextInterviewDate, "MMM d")}
             </span>
           ) : application.deadline ? (
-            <span className="text-[11px] whitespace-nowrap text-muted-foreground">
+            <span className="text-muted-foreground text-[11px] whitespace-nowrap">
               Due {format(application.deadline, "MMM d")}
             </span>
           ) : null}

@@ -22,11 +22,7 @@ import { KanbanColumn } from "./kanban-column";
 
 type BoardApp = BoardApplication & { status: Status };
 
-export function KanbanBoard({
-  applications,
-}: {
-  applications: BoardApp[];
-}) {
+export function KanbanBoard({ applications }: { applications: BoardApp[] }) {
   const [items, setItems] = useState(applications);
   const [activeId, setActiveId] = useState<string | null>(null);
   const router = useRouter();
@@ -88,7 +84,9 @@ export function KanbanBoard({
         ))}
       </div>
       <DragOverlay>
-        {activeApp ? <ApplicationCard application={activeApp} dragging /> : null}
+        {activeApp ? (
+          <ApplicationCard application={activeApp} dragging />
+        ) : null}
       </DragOverlay>
     </DndContext>
   );

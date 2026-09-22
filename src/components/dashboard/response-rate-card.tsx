@@ -1,12 +1,12 @@
 export function ResponseRateCard({ rate }: { rate: number }) {
   return (
-    <div className="flex flex-col justify-between rounded-lg border border-border bg-card p-4">
-      <h3 className="text-sm font-semibold text-foreground">Response rate</h3>
+    <div className="border-border bg-card flex flex-col justify-between rounded-lg border p-4">
+      <h3 className="text-foreground text-sm font-semibold">Response rate</h3>
       <div>
-        <p className="text-4xl font-bold tabular-nums text-primary">
+        <p className="text-primary text-4xl font-bold tabular-nums">
           {rate.toFixed(0)}%
         </p>
-        <p className="mt-1 text-xs text-muted-foreground">
+        <p className="text-muted-foreground mt-1 text-xs">
           of applied roles moved past the initial application stage
         </p>
       </div>

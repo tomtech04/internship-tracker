@@ -26,10 +26,10 @@ export default async function ContactDetailPage({
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h1 className="text-xl font-semibold text-foreground">
+          <h1 className="text-foreground text-xl font-semibold">
             {contact.name}
           </h1>
-          <p className="text-sm text-muted-foreground">
+          <p className="text-muted-foreground text-sm">
             {contact.relationship}
             {contact.role || contact.company
               ? ` · ${[contact.role, contact.company].filter(Boolean).join(" @ ")}`
@@ -39,7 +39,7 @@ export default async function ContactDetailPage({
         <div className="flex items-center gap-2">
           <Link
             href="/contacts"
-            className="text-sm text-muted-foreground hover:underline"
+            className="text-muted-foreground text-sm hover:underline"
           >
             ← Back to contacts
           </Link>
@@ -55,17 +55,17 @@ export default async function ContactDetailPage({
             initialValues={contactToFormValues(contact)}
             applications={applications.map((a) => ({
               id: a.id,
-              company: a.company,
+              company: a.company.name,
               roleTitle: a.roleTitle,
             }))}
           />
         </div>
         <div>
-          <h3 className="mb-2 text-sm font-semibold text-foreground">
+          <h3 className="text-foreground mb-2 text-sm font-semibold">
             Linked applications ({contact.applications.length})
           </h3>
           {contact.applications.length === 0 ? (
-            <p className="text-sm text-muted-foreground">
+            <p className="text-muted-foreground text-sm">
               No applications linked yet — check the boxes in the form.
             </p>
           ) : (
@@ -74,11 +74,11 @@ export default async function ContactDetailPage({
                 <li key={app.id}>
                   <Link
                     href={`/applications/${app.id}`}
-                    className="flex items-center justify-between gap-2 rounded-lg border border-border bg-card px-3 py-2 text-sm hover:border-primary"
+                    className="border-border bg-card hover:border-primary flex items-center justify-between gap-2 rounded-lg border px-3 py-2 text-sm"
                   >
                     <span className="min-w-0 truncate">
-                      <span className="font-medium text-foreground">
-                        {app.company}
+                      <span className="text-foreground font-medium">
+                        {app.company.name}
                       </span>{" "}
                       <span className="text-muted-foreground">
                         — {app.roleTitle}

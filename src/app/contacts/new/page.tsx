@@ -6,12 +6,12 @@ export default async function NewContactPage() {
 
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-xl font-semibold text-foreground">New contact</h1>
+      <h1 className="text-foreground text-xl font-semibold">New contact</h1>
       <ContactForm
         mode="create"
         applications={applications.map((a) => ({
           id: a.id,
-          company: a.company,
+          company: a.company.name,
           roleTitle: a.roleTitle,
         }))}
       />
