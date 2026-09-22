@@ -1,9 +1,14 @@
 import { z } from "zod";
 
 const isoDate = z.coerce.date();
+
+// NOT z.union([z.coerce.date(), z.null()]) — Zod tries union members in
+// order, and z.coerce.date() "succeeds" on null (new Date(null) is the
+// valid, non-NaN Unix epoch), so null would silently become 1970-01-01
+// instead of falling through to z.null(). Check for null explicitly first.
 const isoDateNullable = z
-  .union([z.coerce.date(), z.null()])
-  .transform((v) => v ?? null);
+  .union([z.string(), z.date(), z.null(), z.undefined()])
+  .transform((v) => (v == null ? null : new Date(v)));
 
 export const backupContactSchema = z.object({
   id: z.string(),
