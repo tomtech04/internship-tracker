@@ -1,0 +1,31 @@
+{
+  "name": "internship-tracker-desktop",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Native Mac app wrapper for the Internship Tracker — bundles and runs the Next.js app internally, no separate server or terminal needed.",
+  "main": "main.js",
+  "scripts": {
+    "dist": "electron-builder --mac"
+  },
+  "devDependencies": {
+    "electron": "^44.4.5",
+    "electron-builder": "^26.15.3"
+  },
+  "build": {
+    "appId": "com.tomasnavedo.internshiptracker",
+    "productName": "Internship Tracker",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js"
+    ],
+    "afterPack": "./afterPack.js",
+    "mac": {
+      "category": "public.app-category.productivity",
+      "icon": "build/icon.icns",
+      "target": "dir",
+      "identity": null
+    }
+  }
+}

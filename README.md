@@ -74,6 +74,55 @@ Then open [http://localhost:3000](http://localhost:3000).
 `prisma db seed` — safe to re-run any time you want to reset back to seed
 data (see below).
 
+## Desktop app (macOS)
+
+`desktop/` wraps the app in Electron so it runs as a real double-clickable
+Mac app — no terminal, no `npm run dev`, no visible "localhost" anywhere.
+On launch it spawns the production Next.js server internally, applies any
+pending database migrations, and only then shows the window; the server
+is killed when you quit. Its database lives at `~/Library/Application
+Support/internship-tracker-desktop/dev.db`, entirely separate from the
+`prisma/dev.db` used by `npm run dev` — the two don't share data
+automatically (see below for moving data between them).
+
+Build it (from the repo root, after `npm run build` so `.next/` is
+current):
+
+```bash
+npm run build
+cd desktop
+npm install
+npm run dist
+```
+
+That produces `desktop/dist/mac-arm64/Internship Tracker.app` (or
+`mac-x64` on Intel Macs). Copy it into `/Applications` to install it:
+
+```bash
+cp -R "dist/mac-arm64/Internship Tracker.app" /Applications/
+```
+
+It's unsigned (this is a personal build, not something distributed
+publicly), so the very first launch needs a right-click → **Open** to get
+past Gatekeeper's "unidentified developer" warning — after that it opens
+normally forever.
+
+**Moving your data into it**: the desktop app starts with an empty
+database. Easiest path — while both are closed, copy the SQLite file
+directly (they use an identical schema):
+
+```bash
+cp prisma/dev.db "$HOME/Library/Application Support/internship-tracker-desktop/dev.db"
+```
+
+Or, without touching files directly: open the web version, use **Data →
+Export → Full JSON backup**, then open the desktop app and use **Data →
+Restore from JSON backup**.
+
+Rebuilding after future code changes means repeating the three build
+commands above and re-copying the `.app` into `/Applications` — Electron
+doesn't auto-update from source.
+
 ## Seed data & your own data
 
 - [`prisma/seed.example.json`](prisma/seed.example.json) — generic,
@@ -208,6 +257,10 @@ the fully keyboard-reliable ways to change status.
 ## Project structure
 
 ```
+desktop/
+  main.js              Electron main process (spawns the server, opens the window)
+  afterPack.js         Packaging hook: copies the built app in and rebuilds
+                        native modules (better-sqlite3) for Electron's ABI
 docs/
   claude-autofill-template.md   The paste-into-Claude prompt, explained
 prisma/
